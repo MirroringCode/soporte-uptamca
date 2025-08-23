@@ -25,3 +25,6 @@ Te diriges a la raíz del proyecto y ejecutaras el siguiente comando en CMD, VS 
 `pip install -r requirements.txt`
 
 Ya luego se instalarán las librerías necesarias para este proyecto
+
+
+## WIP()
