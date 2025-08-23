@@ -4,6 +4,7 @@
 
 Para clonar el proyecto en tu PC, lo puedes hacer con el siguiente comando que ejecutaras en VS code o CMD. Lo puedes hacer en cualquier ubicación de la PC, ya sea el Escritorio, Documentos, etc...
 
+`git clone https://github.com/MirroringCode/soporte-uptamca.git`
 
 2. **Activar entorno virtual**
 
