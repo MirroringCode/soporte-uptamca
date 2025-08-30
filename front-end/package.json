@@ -1,0 +1,20 @@
+{
+  "name": "ticketing-sys",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.7",
+    "daisyui": "^5.0.43",
+    "htmx.org": "^2.0.4",
+    "tailwindcss": "^4.1.8"
+  }
+}
