@@ -71,7 +71,7 @@ class Personal(db.Model):
         }
 
     def __repr__(self):
-        return f'<Personal C.I. {self.nombre} {self.apellido}>'
+        return f'<Personal {self.nombre} {self.apellido}>'
 
 
 class Departamento(db.Model):
