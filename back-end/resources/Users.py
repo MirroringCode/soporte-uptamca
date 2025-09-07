@@ -1,6 +1,11 @@
 from flask_restful import Resource, reqparse
 from models import User
 
+parser = reqparse.RequestParser()
+
+parser.add('')
+
+
 class UsersResource(Resource):
     def get(self):
         try:
