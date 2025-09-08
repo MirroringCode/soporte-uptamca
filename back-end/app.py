@@ -18,7 +18,7 @@ from resources.Personal import PersonalResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
 
-# Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end
+# Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
 api.add_resource(UsersResource, '/api/users/')
 api.add_resource(PersonalResource, '/api/personal')
 api.add_resource(RolResource, '/api/roles')
