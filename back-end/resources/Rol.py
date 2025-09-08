@@ -15,5 +15,5 @@ class RolResource(Resource):
             return {
                 'success': False,
                 'error': str(e),
-                'message': 'Hubo un error al obtener la lista de errores'
+                'message': 'Hubo un error al obtener la lista de roles'
             }
