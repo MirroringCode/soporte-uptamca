@@ -1,5 +1,10 @@
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 from models import User
+
+parser = reqparse.RequestParser()
+
+parser.add('')
+
 
 class UsersResource(Resource):
     def get(self):
@@ -18,3 +23,5 @@ class UsersResource(Resource):
                 'error': str(e),
                 'message': 'Hubo un error al obtener la lista de usuario'
             }, 500
+
+    def post(self):
