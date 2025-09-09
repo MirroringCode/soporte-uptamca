@@ -17,12 +17,14 @@ from resources.Users import UsersResource
 from resources.Personal import PersonalResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
+from resources.Soportes import SoportesResource
 
 # Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
 api.add_resource(UsersResource, '/api/users/')
 api.add_resource(PersonalResource, '/api/personal')
 api.add_resource(RolResource, '/api/roles')
 api.add_resource(DepartamentoResource, '/api/departamentos')
+api.add_resource(SoportesResource, '/api/soportes')
 
 # Ejecuta la app
 if __name__ == '__main__':

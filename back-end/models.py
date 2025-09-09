@@ -1,4 +1,4 @@
-from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.dialects.mysql import INTEGER, TIMESTAMP
 from db import db
 
 
@@ -87,9 +87,27 @@ class Departamento(db.Model):
         }
 
 
-# class Soporte(db.Model):
-#     __tablename__ = 'soportes'
+class Soporte(db.Model):
 
+    __tablename__ = 'soportes'
 
+    id              = db.Column(INTEGER(unsigned=True), primary_key=True)
+    motivo          = db.Column(db.String(255), nullable=False)
+    atendido        = db.Column(db.Boolean, nullable=False, default=False)
+    atendido_por    = db.Column(INTEGER(unsigned=True), nullable=True)
+    id_personal     = db.Column(INTEGER(unsigned=True), nullable=True)
+    id_departamento = db.Column(INTEGER(unsigned=True), nullable=True)
+    fecha           = db.Column(TIMESTAMP, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'motivo': self.motivo,
+            'atendido': self.atendido,
+            'atendido_por': self.atendido_por,
+            'id_personal': self.id_personal,
+            'id_departamento': self.id_departamento,
+            'fecha': self.fecha
+        }
 
 

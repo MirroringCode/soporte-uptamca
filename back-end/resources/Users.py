@@ -3,7 +3,7 @@ from models import User
 
 parser = reqparse.RequestParser()
 
-parser.add('')
+#parser.add('')
 
 
 class UsersResource(Resource):
@@ -24,4 +24,3 @@ class UsersResource(Resource):
                 'message': 'Hubo un error al obtener la lista de usuario'
             }, 500
 
-    def post(self):
