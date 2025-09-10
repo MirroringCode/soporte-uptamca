@@ -60,9 +60,11 @@ class PersonalResource(Resource):
                 'error': str(e),
                 'message': 'Ha habido un error creando el empleado'
             }, 500
+            
 
 class EmpleadoResource(Resource):
     def put(self, personal_id):
+        empleado = Personal.query.filter(personal_id).first()
         return {
             'message': f'Actualizando empleado con ID {personal_id}'
         }

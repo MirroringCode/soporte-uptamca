@@ -107,7 +107,7 @@ class Soporte(db.Model):
             'atendido_por': self.atendido_por,
             'id_personal': self.id_personal,
             'id_departamento': self.id_departamento,
-            'fecha': self.fecha
+            'fecha': str(self.fecha)
         }
 
 
