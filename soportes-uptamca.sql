@@ -1,83 +1,206 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Versión del servidor:         8.0.30 - MySQL Community Server - GPL
--- SO del servidor:              Win64
--- HeidiSQL Versión:             12.1.0.6537
--- --------------------------------------------------------
+-- phpMyAdmin SQL Dump
+-- version 5.2.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Sep 10, 2025 at 11:51 PM
+-- Server version: 8.4.3
+-- PHP Version: 8.3.16
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Database: `soportes-uptamca`
+--
 
--- Volcando estructura de base de datos para soportes-uptamca
-CREATE DATABASE IF NOT EXISTS `soportes-uptamca` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `soportes-uptamca`;
+-- --------------------------------------------------------
 
--- Volcando estructura para tabla soportes-uptamca.departamentos
-CREATE TABLE IF NOT EXISTS `departamentos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+--
+-- Table structure for table `departamentos`
+--
 
--- Volcando datos para la tabla soportes-uptamca.departamentos: ~4 rows (aproximadamente)
+CREATE TABLE `departamentos` (
+  `id` int NOT NULL,
+  `nombre` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `departamentos`
+--
+
 INSERT INTO `departamentos` (`id`, `nombre`) VALUES
-	(1, 'Despacho del Contralor'),
-	(2, 'Dirección de Talento Humano'),
-	(3, 'Dirección de Tecnología de Información y Comunicaciones'),
-	(4, 'Oficina de Atención al Ciudadano');
+(1, 'Despacho del Contralor'),
+(2, 'Dirección de Talento Humano'),
+(3, 'Dirección de Tecnología de Información y Comunicaciones'),
+(4, 'Oficina de Atención al Ciudadano');
 
--- Volcando estructura para tabla soportes-uptamca.personal
-CREATE TABLE IF NOT EXISTS `personal` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `cedula` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `apellido` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `id_departamento` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `cedula` (`cedula`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- --------------------------------------------------------
 
--- Volcando datos para la tabla soportes-uptamca.personal: ~2 rows (aproximadamente)
+--
+-- Table structure for table `personal`
+--
+
+CREATE TABLE `personal` (
+  `id` int NOT NULL,
+  `cedula` varchar(50) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `apellido` varchar(255) NOT NULL,
+  `id_departamento` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `personal`
+--
+
 INSERT INTO `personal` (`id`, `cedula`, `nombre`, `apellido`, `id_departamento`) VALUES
-	(1, '85438548', 'jose', 'martinez', 4),
-	(2, '737278', 'Armando', 'Carrera', 5);
+(1, '85438548', 'jose', 'martinez', 4),
+(2, '737278', 'Armando', 'Carrera', 5),
+(3, '28405147', 'miguel', 'martinez', 1);
 
--- Volcando estructura para tabla soportes-uptamca.rol
-CREATE TABLE IF NOT EXISTS `rol` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `tipo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- --------------------------------------------------------
 
--- Volcando datos para la tabla soportes-uptamca.rol: ~2 rows (aproximadamente)
+--
+-- Table structure for table `rol`
+--
+
+CREATE TABLE `rol` (
+  `id` int NOT NULL,
+  `tipo` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `rol`
+--
+
 INSERT INTO `rol` (`id`, `tipo`) VALUES
-	(1, 'Administrador'),
-	(2, 'Técnico');
+(1, 'Administrador'),
+(2, 'Técnico');
 
--- Volcando estructura para tabla soportes-uptamca.user
-CREATE TABLE IF NOT EXISTS `user` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `id_rol` int unsigned NOT NULL,
-  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- --------------------------------------------------------
 
--- Volcando datos para la tabla soportes-uptamca.user: ~0 rows (aproximadamente)
+--
+-- Table structure for table `soportes`
+--
+
+CREATE TABLE `soportes` (
+  `id` int UNSIGNED NOT NULL,
+  `motivo` varchar(255) NOT NULL,
+  `atendido` tinyint(1) NOT NULL DEFAULT '0',
+  `atendido_por` int UNSIGNED DEFAULT NULL,
+  `id_personal` int UNSIGNED DEFAULT NULL,
+  `id_departamento` int DEFAULT NULL,
+  `fecha` timestamp NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `soportes`
+--
+
+INSERT INTO `soportes` (`id`, `motivo`, `atendido`, `atendido_por`, `id_personal`, `id_departamento`, `fecha`) VALUES
+(1, 'Impresora no imprime bien', 1, NULL, NULL, 1, '2025-09-08 16:30:00'),
+(2, 'Impresora no imprime bien', 1, 2, 5, 1, '2025-09-08 16:30:00'),
+(3, 'Impresora no imprime bien', 1, 2, 5, 1, '2025-09-08 16:30:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `id` int UNSIGNED NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `id_rol` int UNSIGNED NOT NULL,
+  `password_hash` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user`
+--
+
 INSERT INTO `user` (`id`, `username`, `id_rol`, `password_hash`) VALUES
-	(1, 'miquios', 1, 'algoooohasheado'),
-	(2, 'miquios', 1, 'algoooohasheado'),
-	(3, 'miquios', 1, 'algoooohasheado');
+(1, 'miquios', 1, 'algoooohasheado'),
+(2, 'miquios', 1, 'algoooohasheado'),
+(3, 'miquios', 1, 'algoooohasheado');
 
-/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `departamentos`
+--
+ALTER TABLE `departamentos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `personal`
+--
+ALTER TABLE `personal`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `cedula` (`cedula`);
+
+--
+-- Indexes for table `rol`
+--
+ALTER TABLE `rol`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `soportes`
+--
+ALTER TABLE `soportes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `departamentos`
+--
+ALTER TABLE `departamentos`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `personal`
+--
+ALTER TABLE `personal`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `rol`
+--
+ALTER TABLE `rol`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `soportes`
+--
+ALTER TABLE `soportes`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
