@@ -26,6 +26,13 @@ api.add_resource(RolResource, '/api/roles')
 api.add_resource(DepartamentoResource, '/api/departamentos')
 api.add_resource(SoportesResource, '/api/soportes')
 
+"""PENDIENTE:
+- MODIFICAR EN USUARIOS, PERSONAL Y SOPORTES,
+- VALIDACIONES 
+- AUTENTICACION DE USUARIOS
+- RELACIONES EN MYSQL
+"""
+
 # Ejecuta la app
 if __name__ == '__main__':
     app.run(debug=True)
