@@ -3,11 +3,17 @@ from models import Personal
 from db import db
 
 
-parser = reqparse.RequestParser(bundle_errors=True)
-parser.add_argument('cedula', type=str, required=True, help='Debe indicar la cédula del empleado')
-parser.add_argument('nombre', type=str, required=True, help='Debe indicar el nombre del empleado') 
-parser.add_argument('apellido', type=str, required=True, help='Debe indicar el apellido del empleado')
-parser.add_argument('id_departamento', type=int, required=True, help='Debe indicar a que departamento pertenece el empleado') 
+post_parser = reqparse.RequestParser(bundle_errors=True)
+post_parser.add_argument('cedula', type=str, required=True, help='Debe indicar la cédula del empleado', location='json')
+post_parser.add_argument('nombre', type=str, required=True, help='Debe indicar el nombre del empleado', location='json') 
+post_parser.add_argument('apellido', type=str, required=True, help='Debe indicar el apellido del empleado', location='json')
+post_parser.add_argument('id_departamento', type=int, required=True, help='Debe indicar a que departamento pertenece el empleado', location='json')
+
+put_parser = reqparse.RequestParser(bundle_errors=True)
+put_parser.add_argument('cedula', type=str, required=False, help='Debe indicar la cédula del empleado', location='json')
+put_parser.add_argument('nombre', type=str, required=False, help='Debe indicar el nombre del empleado', location='json') 
+put_parser.add_argument('apellido', type=str, required=False, help='Debe indicar el apellido del empleado', location='json')
+put_parser.add_argument('id_departamento', type=int, required=False, help='Debe indicar a que departamento pertenece el empleado', location='json') 
 
 """ PENDIENTE POR HACER
 - """
@@ -37,8 +43,14 @@ class PersonalResource(Resource):
     """ Método para crear un nuevo empleado """
     def post(self):
         try:
-            args = parser.parse_args()
+            args = post_parser.parse_args()
             
+            if Personal.query.filter_by(cedula=args['cedula']).first():
+                return {
+                    'success': False,
+                    'message': 'Ya existe un empleado con esa cédula'
+                }, 400
+
             nuevo_empleado = Personal(
                 cedula=args['cedula'],
                 nombre=args['nombre'],
@@ -64,7 +76,41 @@ class PersonalResource(Resource):
 
 class EmpleadoResource(Resource):
     def put(self, personal_id):
-        empleado = Personal.query.filter(personal_id).first()
-        return {
-            'message': f'Actualizando empleado con ID {personal_id}'
-        }
+        try:
+            args = put_parser.parse_args()
+            empleado = Personal.query.get(personal_id)
+            if not empleado:
+                return {
+                    'success': False,
+                    'message': 'Empleado no encontrado'
+                }, 404
+            
+            if args['cedula'] and args['cedula'] != empleado.cedula:
+                if Personal.query.filter_by(cedula=args['cedula']).filter(Personal.id != personal_id).first():
+                    return {
+                        'success': False,
+                        'message': 'Ya existe un empleado con esa cédula'
+                    }, 400
+                empleado.cedula = args['cedula']
+
+            if args['nombre']:
+                empleado.nombre = args['nombre']
+            if args['apellido']:
+                empleado.apellido = args['apellido']
+            if args['id_departamento']:
+                empleado.id_departamento = args['id_departamento']
+            
+            db.session.commit()
+            return {
+                'success': True,
+                'message': f'Información de empleado actualizada exitosamente',
+                'data': empleado.to_dict()
+            }, 200
+        
+        except Exception as e:
+            db.session.rollback()
+            return {
+                'success': False,
+                'error': str(e),
+                'message': 'Ha habido un error actualizando la información del empleado'
+            }, 500

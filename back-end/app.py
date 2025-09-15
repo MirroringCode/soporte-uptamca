@@ -13,18 +13,24 @@ app.config['SQLALCHEMY_TRACK_NOTIFICATION'] = False
 db.init_app(app)
 api = Api(app)
 
-from resources.Users import UsersResource
-from resources.Personal import PersonalResource
+from resources.Users import UsersResource, UserResource
+from resources.Personal import PersonalResource, EmpleadoResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
-from resources.Soportes import SoportesResource
+from resources.Soportes import SoportesResource, SoporteResource
 
 # Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
 api.add_resource(UsersResource, '/api/users/')
+api.add_resource(UserResource, '/api/users/<int:user_id>')
+
 api.add_resource(PersonalResource, '/api/personal')
+api.add_resource(EmpleadoResource, '/api/personal/<int:personal_id>')
+
+api.add_resource(SoportesResource, '/api/soportes')
+api.add_resource(SoporteResource, '/api/soportes/<int:soporte_id>')
+
 api.add_resource(RolResource, '/api/roles')
 api.add_resource(DepartamentoResource, '/api/departamentos')
-api.add_resource(SoportesResource, '/api/soportes')
 
 """PENDIENTE:
 - MODIFICAR EN USUARIOS, PERSONAL Y SOPORTES,
