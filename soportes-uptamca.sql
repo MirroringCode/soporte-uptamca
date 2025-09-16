@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 10, 2025 at 11:51 PM
+-- Generation Time: Sep 16, 2025 at 11:17 AM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.16
 
@@ -29,8 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `departamentos` (
   `id` int NOT NULL,
-  `nombre` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `nombre` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `departamentos`
@@ -50,11 +50,11 @@ INSERT INTO `departamentos` (`id`, `nombre`) VALUES
 
 CREATE TABLE `personal` (
   `id` int NOT NULL,
-  `cedula` varchar(50) NOT NULL,
-  `nombre` varchar(255) NOT NULL,
-  `apellido` varchar(255) NOT NULL,
+  `cedula` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `nombre` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `apellido` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `id_departamento` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `personal`
@@ -62,7 +62,7 @@ CREATE TABLE `personal` (
 
 INSERT INTO `personal` (`id`, `cedula`, `nombre`, `apellido`, `id_departamento`) VALUES
 (1, '85438548', 'jose', 'martinez', 4),
-(2, '737278', 'Armando', 'Carrera', 5),
+(2, '737278', 'Armando', 'Cabrera', 5),
 (3, '28405147', 'miguel', 'martinez', 1);
 
 -- --------------------------------------------------------
@@ -73,8 +73,8 @@ INSERT INTO `personal` (`id`, `cedula`, `nombre`, `apellido`, `id_departamento`)
 
 CREATE TABLE `rol` (
   `id` int NOT NULL,
-  `tipo` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `tipo` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rol`
@@ -92,13 +92,13 @@ INSERT INTO `rol` (`id`, `tipo`) VALUES
 
 CREATE TABLE `soportes` (
   `id` int UNSIGNED NOT NULL,
-  `motivo` varchar(255) NOT NULL,
+  `motivo` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `atendido` tinyint(1) NOT NULL DEFAULT '0',
   `atendido_por` int UNSIGNED DEFAULT NULL,
   `id_personal` int UNSIGNED DEFAULT NULL,
   `id_departamento` int DEFAULT NULL,
   `fecha` timestamp NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `soportes`
@@ -117,19 +117,20 @@ INSERT INTO `soportes` (`id`, `motivo`, `atendido`, `atendido_por`, `id_personal
 
 CREATE TABLE `user` (
   `id` int UNSIGNED NOT NULL,
-  `username` varchar(255) NOT NULL,
+  `username` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `id_rol` int UNSIGNED NOT NULL,
-  `password_hash` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `password_hash` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
 INSERT INTO `user` (`id`, `username`, `id_rol`, `password_hash`) VALUES
-(1, 'miquios', 1, 'algoooohasheado'),
-(2, 'miquios', 1, 'algoooohasheado'),
-(3, 'miquios', 1, 'algoooohasheado');
+(4, 'miquiossimio', 2, '123456'),
+(5, 'miquiosss', 2, '12334'),
+(6, 'miquios04', 2, '1233433'),
+(7, 'miquios05', 2, 'scrypt:32768:8:1$VWSATmjJnuvrXKEj$ef9aeaba54163d6bc7edf64d5e18f5cf455d8e45ec58af3455cd8141661dc93d3cdce94fe740cb20fc1a08c9f978251b35b23a21a4a054c17487263280385d33');
 
 --
 -- Indexes for dumped tables
@@ -198,7 +199,7 @@ ALTER TABLE `soportes`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
