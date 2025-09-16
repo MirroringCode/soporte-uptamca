@@ -93,7 +93,7 @@ class UserResource(Resource):
                     'success': True,
                     'message': 'Información de usuario actualizado exitosamente',
                     'data': usuario.to_dict()
-                }
+                }, 200
 
             except Exception as e:
                 db.session.rollback()
@@ -101,7 +101,30 @@ class UserResource(Resource):
                     'success': False,
                     'error': str(e),
                     'message': 'Error al actualizar la información de usuario'
-                }
+                }, 500
+            
+        def delete(self, user_id):
+            try:
+                user = User.query.get(user_id)
+                if not user:
+                    return {
+                        'success': False,
+                        'message': 'No se encontró este usuario'
+                    }, 404
+
+                db.session.delete(user)
+                db.session.commit()
+
+                return {
+                    'success': True,
+                    'message': 'Se ha borrado información del usuario exitosamente'
+                }, 200
+            except Exception as e:
+                return {
+                    'success': False,
+                    'message': 'Hubo un error al borrar la información de este usuario'
+                }, 500
+
 
 class PasswordResource(Resource):
     def put(self, user_id):

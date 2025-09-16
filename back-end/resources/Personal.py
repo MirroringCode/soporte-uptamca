@@ -114,3 +114,26 @@ class EmpleadoResource(Resource):
                 'error': str(e),
                 'message': 'Ha habido un error actualizando la información del empleado'
             }, 500
+    
+    def delete(self, personal_id):
+        try:
+            empleado = Personal.query.get(personal_id)
+            if not empleado:
+                return {
+                    'success': False,
+                    'message': 'Empleado no encontrado'
+                }, 404
+            db.session.delete(empleado)
+            db.session.commit()
+            return {
+                'success': True,
+                'message': 'Información del empleado eliminada exitosamente'
+            }, 200
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'message': 'No se ha podido eliminar información del empleado'
+            }
+         
+    
