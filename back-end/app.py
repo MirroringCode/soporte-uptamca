@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_TRACK_NOTIFICATION'] = False
 db.init_app(app)
 api = Api(app)
 
-from resources.Users import UsersResource, UserResource
+from resources.Users import UsersResource, UserResource, PasswordResource
 from resources.Personal import PersonalResource, EmpleadoResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
@@ -22,6 +22,7 @@ from resources.Soportes import SoportesResource, SoporteResource, SoporteAtendid
 # Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
 api.add_resource(UsersResource, '/api/users/')
 api.add_resource(UserResource, '/api/users/<int:user_id>')
+api.add_resource(PasswordResource, '/api/users/reset_password/<int:user_id>')
 
 api.add_resource(PersonalResource, '/api/personal')
 api.add_resource(EmpleadoResource, '/api/personal/<int:personal_id>')
@@ -46,7 +47,7 @@ Rutas faltantes:
 - FILTRADO (Digase soportes, usuarios o personal),
 - DELETE (Está en veremos) ✅
 - SOPORTE RECIENTE SIN ATENDER - LISTO ✅
-- REINICIAR CONTRASEÑA (PREGUNTAR IA)
+- REINICIAR CONTRASEÑA (PREGUNTAR IA) ✅
 """
 
 # Ejecuta la app

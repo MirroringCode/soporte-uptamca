@@ -5,12 +5,17 @@ from db import db
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('username', type=str, required=True)
 post_parser.add_argument('password', type=str, required=True)
+post_parser.add_argument('confirm_password', type=str, required=True)
 post_parser.add_argument('id_rol', type=int, required=True)
 
 put_parser = reqparse.RequestParser()
 put_parser.add_argument('username', type=str, required=False),
 put_parser.add_argument('password', type=str, required=False)
 put_parser.add_argument('id_rol', type=int, required=False),
+
+password_parser = reqparse.RequestParser()
+password_parser.add_argument('new_password', type=str, required=True)
+password_parser.add_argument('confirm_new_password', type=str, required=True)
 
 class UsersResource(Resource):
     def get(self):
@@ -34,14 +39,22 @@ class UsersResource(Resource):
         """Crear nuevo usuario"""
         try:
             args = post_parser.parse_args()
+            errores = []
             
             # Verificar si usuario ya existe
             if User.query.filter_by(username=args['username']).first():
+                errores.append('Este usuario ya existe')
+
+            if args['password'] != args['confirm_password']:
+                errores.append('Las contraseñas no coinciden')
+            
+            if errores:
                 return {
                     'success': False,
-                    'message': 'El usuario ya existe'
-                }, 400
-            
+                    'errors': errores,
+                    'message': 'Hubo un problema al registrar el nuevo usuario'
+                }
+
             nuevo_usuario = User(
                 username=args['username'],
                 password=args['password'],  # Se hashea automáticamente
@@ -70,6 +83,7 @@ class UserResource(Resource):
             try:
                 args = put_parser.parse_args()
                 usuario = User.query.get(user_id)
+                errores = []
                 if not usuario:
                     return {
                         'success': False,
@@ -78,11 +92,16 @@ class UserResource(Resource):
                 
                 if args['username'] and args['username'] != usuario.username:
                     if User.query.filter_by(username=args['username']).filter(User.id != user_id).first():
-                        return {
-                            'success': False,
-                            'message': 'El nombre de usuario ya está en uso'
-                        }, 400
+                        errores.append('El nombre de usuario ya está en uso')
                     usuario.username = args['username']
+
+                if errores:
+                    return {
+                        'success': False,
+                        'errors': errores,
+                        'message': 'Hubo un problema al editar la información del usuario'
+                    }, 400
+
 
                 if args['id_rol']:
                     usuario.id_rol = args['id_rol']
@@ -128,4 +147,38 @@ class UserResource(Resource):
 
 class PasswordResource(Resource):
     def put(self, user_id):
-        return "Reiniciar contraseña"
+        """ Reiniciar contraseña con confirmación """
+        try:
+            args = password_parser.parse_args()
+            errores = []
+            usuario = User.query.get(user_id)
+            if not usuario:
+                return {
+                    'success': False,
+                    'message': 'Usuario no encontrado'
+                }, 404
+
+            if args['new_password'] != args['confirm_new_password']:
+                errores.append('Las contraseñas no coinciden')
+            
+            if errores:
+                return {
+                    'success': False,
+                    'errors': errores,
+                    'message': 'Ha habido un problema reiniciando la clave'
+                }, 400
+            
+            usuario.password = args['new_password']
+            db.session.commit()
+
+            return {
+                'success': True,
+                'message': 'Contraseña reiniciada exitosamente'
+            }, 200
+        except Exception as e:
+            db.session.rollback()
+            return {
+                'success': True,
+                'error': str(e),
+                'message': 'Ha habido un problema reiniciando la clave'
+            }
