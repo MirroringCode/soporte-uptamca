@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from models import User
+from models import User, Rol
 from db import db
 
 post_parser = reqparse.RequestParser()
@@ -41,6 +41,11 @@ class UsersResource(Resource):
             args = post_parser.parse_args()
             errores = []
             
+
+            rol = Rol.query.get(args['id_rol'])
+            if not rol:
+                errores.append('El rol especificado no existe')
+
             # Verificar si usuario ya existe
             if User.query.filter_by(username=args['username']).first():
                 errores.append('Este usuario ya existe')
@@ -48,6 +53,8 @@ class UsersResource(Resource):
             if args['password'] != args['confirm_password']:
                 errores.append('Las contraseñas no coinciden')
             
+
+
             if errores:
                 return {
                     'success': False,
@@ -95,6 +102,10 @@ class UserResource(Resource):
                         errores.append('El nombre de usuario ya está en uso')
                     usuario.username = args['username']
 
+                rol = Rol.query.get(args['id_rol'])
+                if not rol:
+                    errores.append('El rol especificado no existe')
+
                 if errores:
                     return {
                         'success': False,
@@ -130,6 +141,13 @@ class UserResource(Resource):
                         'success': False,
                         'message': 'No se encontró este usuario'
                     }, 404
+
+
+                if user.soportes and len(user.soportes) > 0:
+                    return {
+                        'success': False,
+                        'message': 'Hay soportes vinculados a este usuario y no se puede borrar'
+                    }, 400
 
                 db.session.delete(user)
                 db.session.commit()
@@ -181,4 +199,4 @@ class PasswordResource(Resource):
                 'success': True,
                 'error': str(e),
                 'message': 'Ha habido un problema reiniciando la clave'
-            }
+            }, 500

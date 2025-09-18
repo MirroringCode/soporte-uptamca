@@ -18,13 +18,6 @@ put_parser.add_argument('id_personal', type=int, required=False)
 put_parser.add_argument('id_departamento', type=int, required=False)
 put_parser.add_argument('fecha', type=str, required=False)
 
-""" PENDIENTE POR HACER:
-- Método PUT
-- Validaciones personalizadas para PUT y POST
-- Lógica de soportes atendidos (marcar como atendido, ver los soportes atendidos...)
-- FILTRADOS de soportes (ya sea por quien lo atendio, departamento, si está atendido, etc)
- """
-
 class SoportesResource(Resource):
     def get(self):
         try:
@@ -70,6 +63,27 @@ class SoportesResource(Resource):
             }, 500
     
 class SoporteResource(Resource):
+    def get(self, soporte_id):
+        try:
+            soporte = Soporte.query.get(soporte_id)
+            if not soporte:
+                return {
+                    'success': False,
+                    'message': 'No se ha encontrado el soporte especificado',
+                }, 404
+            return {
+                'success': True,
+                'data': soporte.to_dict(),
+                'message': 'Información del soporte obtenida exitosamente'
+            }, 200
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'message': 'Error al obtener información del soporte'
+            }
+
+
     def put(self, soporte_id):
         try:
             args = put_parser.parse_args()

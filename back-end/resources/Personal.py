@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from models import Personal
+from models import Personal, Departamento
 from db import db
 
 
@@ -44,12 +44,20 @@ class PersonalResource(Resource):
     def post(self):
         try:
             args = post_parser.parse_args()
-            
+            errores = []
             if Personal.query.filter_by(cedula=args['cedula']).first():
+                errores.append('Ya existe un empleado con esa cédula')
+
+            departamento = Departamento.query.get(args['id_departamento'])
+            if not departamento:
+                errores.append('El departamento especificado no existe') 
+
+            if errores:
                 return {
                     'success': False,
-                    'message': 'Ya existe un empleado con esa cédula'
-                }, 400
+                    'errors': errores,
+                    'message':'Ha habido un problema registrando al nuevo empleado'
+                }
 
             nuevo_empleado = Personal(
                 cedula=args['cedula'],
@@ -79,6 +87,7 @@ class EmpleadoResource(Resource):
         try:
             args = put_parser.parse_args()
             empleado = Personal.query.get(personal_id)
+            errores = []
             if not empleado:
                 return {
                     'success': False,
@@ -87,11 +96,15 @@ class EmpleadoResource(Resource):
             
             if args['cedula'] and args['cedula'] != empleado.cedula:
                 if Personal.query.filter_by(cedula=args['cedula']).filter(Personal.id != personal_id).first():
-                    return {
-                        'success': False,
-                        'message': 'Ya existe un empleado con esa cédula'
-                    }, 400
+                    errores.append('Ya existen un empleado con esa cédula')
                 empleado.cedula = args['cedula']
+
+            if errores:
+                return {
+                    'success': False,
+                    'errors': errores,
+                    'message': 'Ha habido un error modificando la información del empleado'
+                }
 
             if args['nombre']:
                 empleado.nombre = args['nombre']
@@ -123,6 +136,13 @@ class EmpleadoResource(Resource):
                     'success': False,
                     'message': 'Empleado no encontrado'
                 }, 404
+            
+            if empleado.soportes_solicitados and len(empleado.soportes_solicitados) > 0:
+                return {
+                    'success': False,
+                    'message': 'Hay soportes solicitados vinculados a este empleado y no se puede borrar'
+                }, 400
+
             db.session.delete(empleado)
             db.session.commit()
             return {
@@ -134,6 +154,6 @@ class EmpleadoResource(Resource):
                 'success': False,
                 'error': str(e),
                 'message': 'No se ha podido eliminar información del empleado'
-            }
+            }, 500
          
     
