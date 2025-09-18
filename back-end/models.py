@@ -3,17 +3,6 @@ from sqlalchemy import ForeignKey
 from db import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-"""
-RELACIONES HECHAS
-- Usuarios <--> Rol
-- Personal <--> Departamento
-- Usuarios <--> Soportes
-
-RELACIONES FALTANTES
-- Departamentos <--> Soportes
-- Personal <--> Soportes
-"""
-
 class User(db.Model):
     """ Define propiedades que tendran los usuarios al usarse en el Sistema.
     Basicamente es una representación de la tabla existente en base de datos, 
@@ -94,6 +83,8 @@ class Personal(db.Model):
                                 nullable=False)
 
     departamento = db.relationship('Departamento', backref='personal')
+    soportes_solicitados = db.relationship('Soporte', foreign_keys='Soporte.id_personal',
+                                           backref='solicitante')
 
     # Jalar lista de personal
     def to_dict(self):
@@ -102,8 +93,7 @@ class Personal(db.Model):
             'cedula': self.cedula,
             'nombre': self.nombre,
             'apellido': self.apellido,
-            'id_departamento': self.id_departamento,
-            'departamento': self.departamento.nombre if self.departamento else None
+            'departamento': self.departamento.nombre if self.departamento else None,
         }
 
     def __repr__(self):
@@ -114,7 +104,11 @@ class Departamento(db.Model):
     __tablename__ = 'departamentos'
 
     id     = db.Column(INTEGER(unsigned=True), primary_key=True)
-    nombre = db.Column(INTEGER(unsigned=True), nullable=False)
+    nombre = db.Column(db.String, nullable=False, unique=True)
+
+
+    soportes = db.relationship('Soporte', foreign_keys='Soporte.id_departamento',
+                               backref='departamento')
 
     def to_dict(self):
         return {
@@ -133,8 +127,12 @@ class Soporte(db.Model):
     atendido_por    = db.Column(INTEGER(unsigned=True),
                                 ForeignKey('user.id', ondelete='SET NULL'), 
                                 nullable=True)
-    id_personal     = db.Column(INTEGER(unsigned=True), nullable=True)
-    id_departamento = db.Column(INTEGER(unsigned=True), nullable=True)
+    id_personal     = db.Column(INTEGER(unsigned=True),
+                                ForeignKey('personal.id', ondelete='SET NULL'), 
+                                nullable=True)
+    id_departamento = db.Column(INTEGER(unsigned=True), 
+                                ForeignKey('departamentos.id', ondelete='SET NULL'),
+                                nullable=True)
     fecha           = db.Column(TIMESTAMP, nullable=False)
 
 
@@ -143,10 +141,9 @@ class Soporte(db.Model):
             'id': self.id,
             'motivo': self.motivo,
             'atendido': self.atendido,
-            'atendido_por': self.atendido_por,
             'tecnico': self.user.username if self.user else None,
-            'id_personal': self.id_personal,
-            'id_departamento': self.id_departamento,
+            'solicitante': f'{self.solicitante.nombre} {self.solicitante.apellido}' if self.solicitante else None,
+            'departamento': self.departamento.nombre if self.departamento else None,
             'fecha': str(self.fecha)
         }
 

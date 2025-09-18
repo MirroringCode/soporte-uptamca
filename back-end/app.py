@@ -39,15 +39,7 @@ api.add_resource(DepartamentoResource, '/api/departamentos')
 - MODIFICAR EN USUARIOS, PERSONAL Y SOPORTES ✅
 - VALIDACIONES 
 - AUTENTICACION DE USUARIOS
-- RELACIONES EN MYSQL
-"""
-
-"""
-Rutas faltantes:
-- FILTRADO (Digase soportes, usuarios o personal),
-- DELETE (Está en veremos) ✅
-- SOPORTE RECIENTE SIN ATENDER - LISTO ✅
-- REINICIAR CONTRASEÑA (PREGUNTAR IA) ✅
+- RELACIONES EN MYSQL ✅ 
 """
 
 # Ejecuta la app
