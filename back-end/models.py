@@ -1,6 +1,18 @@
 from sqlalchemy.dialects.mysql import INTEGER, TIMESTAMP
+from sqlalchemy import ForeignKey
 from db import db
 from werkzeug.security import generate_password_hash, check_password_hash
+
+"""
+RELACIONES HECHAS
+- Usuarios <--> Rol
+- Personal <--> Departamento
+- Usuarios <--> Soportes
+
+RELACIONES FALTANTES
+- Departamentos <--> Soportes
+- Personal <--> Soportes
+"""
 
 class User(db.Model):
     """ Define propiedades que tendran los usuarios al usarse en el Sistema.
@@ -13,8 +25,15 @@ class User(db.Model):
     # Campos dentro de la tabla (deben coincidir con los que están creados en el MySQL)
     id            = db.Column(INTEGER(unsigned=True), primary_key=True)
     username      = db.Column(db.String(255), nullable=False)
-    id_rol        = db.Column(INTEGER(unsigned=True), nullable=False)
+    id_rol        = db.Column(INTEGER(unsigned=True),
+                              ForeignKey('rol.id', ondelete='RESTRICT'), 
+                              nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+
+    rol = db.relationship('Rol', backref='users')
+    soportes = db.relationship('Soporte', foreign_keys='Soporte.atendido_por', 
+                                     backref='user')
+
 
     @property
     def password(self):
@@ -32,7 +51,8 @@ class User(db.Model):
         return {
             'id': self.id,
             'username': self.username,
-            'id_rol': self.id_rol,
+            'rol': self.rol.tipo if self.rol else None,
+            'soportes_realizados': len(self.soportes)
         }   
     
     def __repr__(self):
@@ -69,7 +89,11 @@ class Personal(db.Model):
     cedula          = db.Column(db.String(100), nullable=False)
     nombre          = db.Column(db.String(255), nullable=False)
     apellido        = db.Column(db.String(255), nullable=False)
-    id_departamento = db.Column(INTEGER(unsigned=True), nullable=False)
+    id_departamento = db.Column(INTEGER(unsigned=True),
+                                ForeignKey('departamentos.id', ondelete='RESTRICT'), 
+                                nullable=False)
+
+    departamento = db.relationship('Departamento', backref='personal')
 
     # Jalar lista de personal
     def to_dict(self):
@@ -78,7 +102,8 @@ class Personal(db.Model):
             'cedula': self.cedula,
             'nombre': self.nombre,
             'apellido': self.apellido,
-            'id_departamento': self.id_departamento
+            'id_departamento': self.id_departamento,
+            'departamento': self.departamento.nombre if self.departamento else None
         }
 
     def __repr__(self):
@@ -105,10 +130,13 @@ class Soporte(db.Model):
     id              = db.Column(INTEGER(unsigned=True), primary_key=True)
     motivo          = db.Column(db.String(255), nullable=False)
     atendido        = db.Column(db.Boolean, nullable=False, default=False)
-    atendido_por    = db.Column(INTEGER(unsigned=True), nullable=True)
+    atendido_por    = db.Column(INTEGER(unsigned=True),
+                                ForeignKey('user.id', ondelete='SET NULL'), 
+                                nullable=True)
     id_personal     = db.Column(INTEGER(unsigned=True), nullable=True)
     id_departamento = db.Column(INTEGER(unsigned=True), nullable=True)
     fecha           = db.Column(TIMESTAMP, nullable=False)
+
 
     def to_dict(self):
         return {
@@ -116,6 +144,7 @@ class Soporte(db.Model):
             'motivo': self.motivo,
             'atendido': self.atendido,
             'atendido_por': self.atendido_por,
+            'tecnico': self.user.username if self.user else None,
             'id_personal': self.id_personal,
             'id_departamento': self.id_departamento,
             'fecha': str(self.fecha)
