@@ -1,5 +1,11 @@
 from flask_restful import Resource, reqparse
 from models import Personal, Departamento
+from common.validator import (
+    validate_length,
+    validate_required,
+    validate_numeric,
+    validate_regex
+)
 from db import db
 
 
@@ -51,6 +57,31 @@ class PersonalResource(Resource):
             departamento = Departamento.query.get(args['id_departamento'])
             if not departamento:
                 errores.append('El departamento especificado no existe') 
+            
+            try:
+                validate_required(args['cedula'])
+                validate_numeric(args['cedula'])
+                validate_length(args['cedula'], 8, 10)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['nombre'])
+                validate_length(args['nombre'], 4, 100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['apellido'])
+                validate_length(args['apellido'], 4, 100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['id_departamento'])
+                validate_numeric(args['id_departamento'])
+            except ValueError as e:
+                errores.append(str(e)) 
 
             if errores:
                 return {
@@ -98,6 +129,35 @@ class EmpleadoResource(Resource):
                 if Personal.query.filter_by(cedula=args['cedula']).filter(Personal.id != personal_id).first():
                     errores.append('Ya existen un empleado con esa cédula')
                 empleado.cedula = args['cedula']
+
+            departamento = Departamento.query.get(args['id_departamento'])
+            if not departamento:
+                errores.append('El departamento especificado no existe') 
+
+            try:
+                validate_required(args['cedula'])
+                validate_numeric(args['cedula'])
+                validate_length(args['cedula'], 8, 10)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['nombre'])
+                validate_length(args['nombre'], 4, 100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['apellido'])
+                validate_length(args['apellido'], 4, 100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['id_departamento'])
+                validate_numeric(args['id_departamento'])
+            except ValueError as e:
+                errores.append(str(e))
 
             if errores:
                 return {

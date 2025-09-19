@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from models import Soporte
+from models import Soporte, Personal, User, Departamento
 from db import db
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
@@ -38,6 +38,25 @@ class SoportesResource(Resource):
     def post(self):
         try:
             args = post_parser.parse_args()
+            errores = []
+            empleado = Personal.query.get(args['id_personal'])
+            tecnico = User.query.get(args['atendido_por'])
+            departamento = Departamento.query.get(args['id_departamento'])
+
+            if not empleado:
+                errores.append('No se ha encontrado a este empleado')
+            if not tecnico:
+                errores.append('No se ha encontrado a este técnico')
+            if not departamento:
+                errores.append('No se ha encontrado el departamento')
+
+            if errores:
+                return {
+                    'success': False,
+                    'errors': errores,
+                    'message': 'Ha habido un error registrando el soporte'
+                }
+
             nuevo_soporte = Soporte(
                 motivo=args['motivo'],
                 atendido=args['atendido'] if 'atendido' in args else False,
@@ -88,12 +107,33 @@ class SoporteResource(Resource):
         try:
             args = put_parser.parse_args()
             soporte = Soporte.query.get(soporte_id)
+            errores = []
+            empleado = Personal.query.get(args['id_personal'])
+            tecnico = User.query.get(args['atendido_por'])
+            departamento = Departamento.query.get(args['id_departamento'])
+
+
 
             if not soporte:
                 return {
                     'success': False,
                     'message': 'Soporte no encontrado'
                 }, 404
+            
+            if not empleado:
+                errores.append('No se ha encontrado a este empleado')
+            if not tecnico:
+                errores.append('No se ha encontrado a este técnico')
+            if not departamento:
+                errores.append('No se ha encontrado el departamento')
+
+            if errores:
+                return {
+                    'success': False,
+                    'errors': errores,
+                    'message': 'Ha habido un error registrando el soporte'
+                }
+
             if args['motivo']:
                 soporte.motivo = args['motivo']
             if 'atendido' in args:

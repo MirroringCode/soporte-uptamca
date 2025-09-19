@@ -4,16 +4,16 @@ import re
 from datetime import datetime
 
 def validate_length(value, min_length=1, max_length=255):
-    if value is None:
-        raise ValueError("El campo es requerido")
     if not (min_length <= len(value) <= max_length):
         raise ValueError(f"El campo debe tener entre {min_length} y {max_length} caracteres")
     return value
 
 def validate_numeric(value):
-    if value is None or not str(value).isdigit():
-        raise ValueError("El campo debe ser numérico")
-    return int(value)
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and value.isdigit():
+        return value
+    raise ValueError('Solo puede ingresar números')
 
 def validate_required(value):
     if value is None or (isinstance(value, str) and not value.strip()):

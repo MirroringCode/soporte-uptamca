@@ -1,4 +1,9 @@
 from flask_restful import Resource, reqparse
+from common.validator import (
+    validate_required,
+    validate_length,
+    validate_numeric
+)
 from models import User, Rol
 from db import db
 
@@ -41,6 +46,29 @@ class UsersResource(Resource):
             args = post_parser.parse_args()
             errores = []
             
+            try:
+                validate_required(args['username'])
+                validate_length(args['username'], min_length=2, max_length=100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['password'])
+                validate_length(args['password'], min_length=4, max_length=100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['confirm_password'])
+            except ValueError as e:
+                errores.append(str(e))
+            
+            try:
+                validate_required(args['id_rol'])
+                validate_numeric(args['id_rol'])
+            except ValueError as e:
+                errores.append(str(e))
+
 
             rol = Rol.query.get(args['id_rol'])
             if not rol:
@@ -96,7 +124,19 @@ class UserResource(Resource):
                         'success': False,
                         'message': 'Usuario no encontrado'
                     }, 404
+
+                try:
+                    validate_required(args['username'])
+                    validate_length(args['username'], 2, 100)
+                except ValueError as e:
+                    errores.append(str(e))
                 
+                try:
+                    validate_required(args['id_rol'])
+                    validate_numeric(args['id_rol'])
+                except ValueError as e:
+                    errores.append(str(e))
+
                 if args['username'] and args['username'] != usuario.username:
                     if User.query.filter_by(username=args['username']).filter(User.id != user_id).first():
                         errores.append('El nombre de usuario ya está en uso')
@@ -105,6 +145,7 @@ class UserResource(Resource):
                 rol = Rol.query.get(args['id_rol'])
                 if not rol:
                     errores.append('El rol especificado no existe')
+                   
 
                 if errores:
                     return {
@@ -175,6 +216,17 @@ class PasswordResource(Resource):
                     'success': False,
                     'message': 'Usuario no encontrado'
                 }, 404
+
+            try:
+                validate_required(args['new_password'])
+                validate_length(args['new_password'], min_length=4, max_length=100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['confirm_new_password'])
+            except ValueError as e:
+                errores.append(str(e))
 
             if args['new_password'] != args['confirm_new_password']:
                 errores.append('Las contraseñas no coinciden')
