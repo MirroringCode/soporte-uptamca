@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 from common import verify_db
 from db import db
 
@@ -12,6 +13,7 @@ app.config['SQLALCHEMY_TRACK_NOTIFICATION'] = False
 
 db.init_app(app)
 api = Api(app)
+CORS(app)
 
 from resources.Users import UsersResource, UserResource, PasswordResource
 from resources.Personal import PersonalResource, EmpleadoResource
