@@ -1,6 +1,10 @@
-
+import htmx from 'htmx.org'
+import Mustache from 'mustache'
 import { swapTheme } from "./utils/swapTheme";
 import { checkAllTable } from "./utils/checkboxAllTable";
+
+// Config HTMX
+htmx.config.selfRequestsOnly = false;
 
 const elements = {
     themeSwap: document.querySelector('#themeSwap input[type="checkbox"]'),
