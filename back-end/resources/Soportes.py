@@ -1,5 +1,7 @@
 from flask import render_template, make_response, request
 from flask_restful import Resource, reqparse
+from sqlalchemy import desc, func
+from datetime import datetime, timedelta
 from models import Soporte, Personal, User, Departamento
 from db import db
 
@@ -191,16 +193,31 @@ class SoporteResource(Resource):
             }, 500
 
 
-class SoporteAtendidoResource(Resource):
+
+class SoporteStatusResource(Resource):
     def get(self):
         try:
-            soportes = Soporte.query.filter(Soporte.atendido == True)
+            atendido_param = request.args.get('atendido')
+            query = Soporte.query
+
+            if atendido_param == 'si':
+                query = query.filter(Soporte.atendido == True)
+            elif atendido_param == 'no':
+                query = query.filter(Soporte.atendido == False).order_by(desc(Soporte.fecha))
+            
+            
+            soportes = query.all()
+
+            if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
+                html = render_template('soportes/partials/soporte-reciente-card.html', soportes=soportes)
+                return make_response(html, 200)
+
             return {
                 'success': True,
                 'data': [s.to_dict() for s in soportes] or 'No se encontraron soportes',
-                'message': 'Soportes atendidos obtenidos exitosamente',
-                'count': soportes.count()
-            }, 200
+                'message': 'Soportes obtenidos exitosamente',
+                'count': len(soportes),
+            }, 200           
         except Exception as e:
             return {
                 'success': False,
@@ -208,26 +225,45 @@ class SoporteAtendidoResource(Resource):
                 'message': 'Ha habido un error obteniendo los soportes atendidos'
             }, 500
 
-class SoporteSinAtenderResource(Resource):
+class SoportesCountResource(Resource):
     def get(self):
         try:
-            soportes = Soporte.query.\
-                filter(Soporte.atendido == False).\
-                order_by(Soporte.fecha)
-            
+
+            hoy = datetime.today()
+            inicio_dia = hoy.replace(hour=0, minute=0, second=0, microsecond=0)
+            inicio_semana = hoy - timedelta(days=hoy.weekday())
+            inicio_mes = hoy.replace(day=1)
+
+            diarios = Soporte.query.filter(
+                Soporte.fecha >= inicio_dia
+            ).count()
+
+            semanales = Soporte.query.filter(
+                Soporte.fecha >= inicio_semana
+            ).count()
+
+            mensuales = Soporte.query.filter(
+                Soporte.fecha >= inicio_mes
+            ).count()
+
             if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
-                html = render_template('soportes/partials/soporte-reciente-card.html', soportes=soportes)
-                return make_response(html, 200)
+                html = render_template('soportes/partials/conteo.html')
+                make_response(html, 200)
 
             return {
                 'success': True,
-                'data': [s.to_dict() for s in soportes] or 'No se encontraron soportes sin atender',
-                'message': 'Soportes sin atender obtenidos exitosamente',
-                'count': soportes.count(),
-            }, 200           
+                'data': {
+                    'diarios': diarios,
+                    'semanales': semanales,
+                    'mensuales': mensuales
+                },
+                'message': 'Conteo obtenido exitosamente'
+            }, 200
         except Exception as e:
             return {
                 'success': False,
                 'error': str(e),
-                'message': 'Hubo un error obteniendo los soportes'
-            }, 500
+                'message': 'No se ha podido obtener el conteo'
+            }
+
+
