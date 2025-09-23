@@ -3,7 +3,7 @@
     <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-sm">
     <div class="card-body">
         <h2 class="card-title">{{ soporte.motivo }}</h2>
-        <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+        <p>{{ soporte.departamento.nombre }} - {{ soporte.solicitante.nombre + ' ' + soporte.solicitante.apellido }}</p>
         <div class="justify-end card-actions">
         <button class="btn btn-primary">Ver</button>
         {% if not soporte.atendido %}

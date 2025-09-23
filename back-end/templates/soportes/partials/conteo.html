@@ -1,6 +1,20 @@
 <div class="stats shadow">
     <div class="stat">
-        <div class="stat-title">Total Page Views</div>
-        <div class="stat-desc">21% more than last month</div>
+        <div class="stat-title">Soportes realizados en el día</div>
+        <div class="stat-value">{{ diario or 0 }}</div>
+    </div>
+</div>
+
+<div class="stats shadow">
+    <div class="stat">
+        <div class="stat-title">Soportes realizados en la semana</div>
+        <div class="stat-value">{{ semanales }}</div>
+    </div>
+</div>
+
+<div class="stats shadow">
+    <div class="stat">
+        <div class="stat-title">Soportes realizados en el mes</div>
+        <div class="stat-value">{{ mensuales }}</div>
     </div>
 </div>

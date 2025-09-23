@@ -1,4 +1,5 @@
 export const checkAllTable = (table) => {
+    console.log(table.querySelector('th'));
     const firstCheckbox = table.querySelector('thead input[type="checkbox"]');
     const checkboxes = table.querySelectorAll('tbody input[type="checkbox"]');
 

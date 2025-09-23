@@ -17,10 +17,14 @@ document.body.addEventListener('htmx:configRequest', (e) => {
 
 const elements = {
     themeSwap: document.querySelector('#themeSwap input[type="checkbox"]'),
-    // calledFunctions: {
-    //     checkAllTable: checkAllTable(document.querySelector('.table')),
-    // }
+    table: document.querySelector('.table'),
 };
+
+
+
+if(elements.table) {
+    checkAllTable(elements.table)
+}
 
 // Aplica el tema guardado al cargar la página
 document.addEventListener('DOMContentLoaded', () => {

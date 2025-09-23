@@ -82,28 +82,10 @@
 
         <h1 class="text-3xl font-bold">Dashboard</h1>
         
-        <div class="flex flex-wrap justify-evenly gap-4 my-[1em]">
-          <div class="stats shadow">
-            <div class="stat">
-              <div class="stat-title">Total Page Views</div>
-              <div class="stat-desc">21% more than last month</div>
-            </div>
-          </div>
+        <div class="flex flex-wrap justify-evenly gap-4 my-[1em]"
+        hx-get="/api/soportes_count"
+        hx-trigger="load">
 
-          <div class="stats shadow">
-            <div class="stat">
-              <div class="stat-title">Total Page Views</div>
-              <div class="stat-value">89,400</div>
-              <div class="stat-desc">21% more than last month</div>
-            </div>
-          </div>
-
-          <div class="stats shadow">
-            <div class="stat">
-              <div class="stat-title">Soportes realizados en el mes</div>
-              <div class="stat-value">89,400</div>
-            </div>
-          </div>
         </div>
        
         <ul class="flex flex-col gap-4" 

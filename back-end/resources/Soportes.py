@@ -247,8 +247,11 @@ class SoportesCountResource(Resource):
             ).count()
 
             if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
-                html = render_template('soportes/partials/conteo.html', )
-                make_response(html, 200)
+                html = render_template('soportes/partials/conteo.html', 
+                                       diarios=diarios, 
+                                       semanales=semanales, 
+                                       mensuales=mensuales)
+                return make_response(html, 200)
 
             return {
                 'success': True,
