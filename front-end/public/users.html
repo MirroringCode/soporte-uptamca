@@ -81,9 +81,27 @@
     <div class="flex flex-col lg:flex-row items-center w-full gap-5 justify-around">
 
         <div>
-            <button class="btn btn-success">Crear nuevo usuario</button>
+            <button class="btn btn-success" onclick="crearUsuario.showModal()">Crear nuevo usuario</button>
         </div>
 
+        <dialog class="modal" id="crearUsuario">
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Crear nuevo usuario
+            </h1>
+            <label for="">Hola</label>
+            <input type="text">
+            <div class="modal-action">
+              <form method="dialog">
+                <button class="btn">Cerrar</button>
+              </form>
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
+
+        </dialog>
 
 <!--         <div class="dropdown dropdown-right">
         <div tabindex="0" role="button" class="btn m-1">
