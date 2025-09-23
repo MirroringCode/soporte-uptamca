@@ -22,9 +22,9 @@ const elements = {
 
 
 
-if(elements.table) {
-    checkAllTable(elements.table)
-}
+// if(elements.table) {
+//     checkAllTable(elements.table)
+// }
 
 // Aplica el tema guardado al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
