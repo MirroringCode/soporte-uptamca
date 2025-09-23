@@ -22,7 +22,7 @@ from resources.Departamento import DepartamentoResource
 from resources.Soportes import SoportesResource, SoporteResource, SoporteAtendidoResource, SoporteSinAtenderResource
 
 # Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
-api.add_resource(UsersResource, '/api/users/')
+api.add_resource(UsersResource, '/api/users')
 api.add_resource(UserResource, '/api/users/<int:user_id>')
 api.add_resource(PasswordResource, '/api/users/reset_password/<int:user_id>')
 

@@ -1,3 +1,4 @@
+from flask import make_response, render_template, request
 from flask_restful import Resource, reqparse
 from models import Personal, Departamento
 from common.validator import (
@@ -31,6 +32,10 @@ class PersonalResource(Resource):
             # Hace consulta a la base de datos
             empleados = Personal.query.all()
 
+            if 'text/html' in request.headers.get('Accept', '') or request.headers.get('HX-Request') == 'true':
+                html = render_template('personal/partials/table.html', empleados=empleados)
+                return make_response(html, 200)
+ 
             # Si todo sale bien devuelve respuesta en formato JSON
             return {
                 'success': True,

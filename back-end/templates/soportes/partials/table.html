@@ -1,0 +1,40 @@
+<thead>
+    <tr>
+        <th><label><input type="checkbox" class="checkbox"></label></th>
+        <th>Motivo</th>
+        <th>Atendido</th>
+        <th>Técnico</th>
+        <th>Solicitante</th>
+        <th>Departamento</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
+<tbody>
+    {% for soporte in soportes %}
+        <tr id="soporte-{{ soporte.id }}">
+            <td>
+                <label for="">
+                    <input type="checkbox" class="checkbox" name="" id="">
+                </label>
+            </td>
+            <td>{{ soporte.motivo }}</td>
+            <td>
+                {% if soporte.atendido %}
+                <span class="badge badge-success">Atendido</span>
+                {% else %}
+                <span class="badge badge-warning">Pendiente</span>
+                {% endif %}
+            </td>
+            <td>{{ soporte.user.username or 'N/A' }}</td>
+            <td>{{ soporte.solicitante.nombre or 'N/A' }}</td>
+            <td>{{ soporte.departamento.nombre or 'N/A' }}</td>
+            <td>{{ soporte.fecha or 'N/A' }}</td>
+            <td>
+                <button class="btn btn-xs btn-primary">
+                    Editar
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>

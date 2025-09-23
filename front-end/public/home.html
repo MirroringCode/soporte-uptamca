@@ -111,74 +111,20 @@
 
 
 
-
-        <ul class="flex flex-col gap-4">
-          <p class="text-2xl font-bold">Soportes más recientes</p>
-          <li>
-              <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-sm">
-                <div class="card-body">
-                  <h2 class="card-title">Soporte 1</h2>
-                  <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-                  <div class="justify-end card-actions">
-                    <button class="btn btn-primary">Ver</button>
-                    <button class="btn btn-success">Marcar como atendido</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li>
-              <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-sm">
-                <div class="card-body">
-                  <h2 class="card-title">Soporte 2</h2>
-                  <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-                  <div class="justify-end card-actions">
-                    <button class="btn btn-primary">Ver</button>
-                    <button class="btn btn-success">Marcar como atendido</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li>
-              <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-sm">
-                <div class="card-body">
-                  <h2 class="card-title">Soporte 2</h2>
-                  <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-                  <div class="justify-end card-actions">
-                    <button class="btn btn-primary">Ver</button>
-                    <button class="btn btn-success">Marcar como atendido</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
+        
+        <ul class="flex flex-col gap-4" 
+        hx-get="/api/soportes/no_atendidos"
+        hx-swap="beforeend"
+        hx-trigger="load">
+        <li><p class="text-2xl font-bold">Soportes más recientes</p></li>
+        </ul>
 
     
   </div>
-  <div class="drawer-side h-screen lg:sticky top-0">
-    <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu bg-base-200 text-base-content min-h-full w-50 flex flex-col justify-start items-center gap-17 p-3">
-      <!-- Sidebar content here -->
-      
-        <li>
-        <div class="avatar avatar-placeholder">
-          <div class="bg-neutral text-neutral-content w-16 rounded-full justify-self-center">
-            <span class="text-sm">UI</span>
-          </div>
-        </li>
-
-        <li>
-            <a href="./about.html" class="px-[.75em]">Inicio</a>
-            <a href="./personal.html" class="px-[.75em]">Personal</a>
-            <a href="soportes.html" class="px-[.75em]">Soportes</a>
-            <a href="./users.html" class="px-[.75em]">Usuarios</a>
-           <!-- <a>Notificaciones <span class="bg-secondary px-2 rounded-xl font-bold">1</span></a> -->
-        </li>
-
-        <li class="mt-auto">
-          <button class="btn btn btn-soft btn-secondary">Salir</button>
-        </li>
-    </ul>
-  </div>
+    <div class="drawer-side h-screen lg:sticky top-0"
+    hx-get="/layout/nav.html"
+    hx-trigger="load">
+    </div>
 </div>
   
 

@@ -1,3 +1,4 @@
+from flask import render_template, make_response, request
 from flask_restful import Resource, reqparse
 from models import Soporte, Personal, User, Departamento
 from db import db
@@ -22,6 +23,11 @@ class SoportesResource(Resource):
     def get(self):
         try:
             soportes = Soporte.query.all()
+
+            if 'text/html' in request.headers.get('Accept', '') or request.headers.get('HX-Request') == 'true':
+                html = render_template('soportes/partials/table.html', soportes=soportes)
+                return make_response(html, 200)
+
             return {
                 'success': True,
                 'data': [s.to_dict() for s in soportes],
@@ -43,11 +49,11 @@ class SoportesResource(Resource):
             tecnico = User.query.get(args['atendido_por'])
             departamento = Departamento.query.get(args['id_departamento'])
 
-            if not empleado:
+            if not empleado and empleado != None:
                 errores.append('No se ha encontrado a este empleado')
-            if not tecnico:
+            if not tecnico and tecnico != None:
                 errores.append('No se ha encontrado a este técnico')
-            if not departamento:
+            if not departamento and departamento != None:
                 errores.append('No se ha encontrado el departamento')
 
             if errores:
@@ -208,6 +214,10 @@ class SoporteSinAtenderResource(Resource):
             soportes = Soporte.query.\
                 filter(Soporte.atendido == False).\
                 order_by(Soporte.fecha)
+            
+            if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
+                html = render_template('soportes/partials/soporte-reciente-card.html', soportes=soportes)
+                return make_response(html, 200)
 
             return {
                 'success': True,

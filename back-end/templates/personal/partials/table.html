@@ -1,0 +1,28 @@
+<thead>
+    <tr>
+        <th><label><input type="checkbox" class="checkbox"></label></th>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Departamento</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
+<tbody>
+    {% for empleado in empleados %}
+        <tr id="empleado-{{ empleado.cedula }}">
+            <td>
+                <label for="">
+                    <input type="checkbox" class="checkbox" name="" id="">
+                </label>
+            </td>
+            <td>{{ empleado.cedula }}</td>
+            <td>{{ empleado.nombre }} {{ empleado.apellido }}</td>
+            <td>{{ empleado.departamento.nombre or 'N/A'}}</td>
+            <td> 
+                <button class="btn btn-xs btn-primary">
+                    Editar
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>

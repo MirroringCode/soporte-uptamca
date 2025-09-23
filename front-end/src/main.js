@@ -1,10 +1,19 @@
-import htmx from 'htmx.org'
+import htmx  from 'htmx.org'
 import Mustache from 'mustache'
 import { swapTheme } from "./utils/swapTheme";
 import { checkAllTable } from "./utils/checkboxAllTable";
+import { config } from './config';
 
-// Config HTMX
+
 htmx.config.selfRequestsOnly = false;
+document.body.addEventListener('htmx:configRequest', (e) => {
+    const path = e.detail.path;
+    
+    if(path.startsWith('/api/')) {
+        const API_BASE_URL = config().url.api;
+        e.detail.path = API_BASE_URL + e.detail.path;
+    }
+});
 
 const elements = {
     themeSwap: document.querySelector('#themeSwap input[type="checkbox"]'),

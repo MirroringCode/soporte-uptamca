@@ -1,3 +1,4 @@
+from flask import make_response, render_template, request
 from flask_restful import Resource, reqparse
 from common.validator import (
     validate_required,
@@ -26,6 +27,10 @@ class UsersResource(Resource):
     def get(self):
         try:
             users = User.query.all()
+
+            if 'text/html' in request.headers.get('Accept', '') or request.headers.get('HX-Request') == 'true':
+                html = render_template('users/partials/table.html', users=users)
+                return make_response(html, 200)
 
             return {
                 'success': True,
