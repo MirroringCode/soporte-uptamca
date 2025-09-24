@@ -31,8 +31,12 @@ class PersonalResource(Resource):
         try:
             # Hace consulta a la base de datos
             empleados = Personal.query.all()
+            
 
             if 'text/html' in request.headers.get('Accept', '') or request.headers.get('HX-Request') == 'true':
+
+               
+
                 html = render_template('personal/partials/table.html', empleados=empleados)
                 return make_response(html, 200)
  

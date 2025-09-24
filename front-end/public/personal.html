@@ -74,13 +74,60 @@
           </svg>
         </label>
 
-        <h1 class="text-3xl font-bold text-center my-[1em]">Lista de usuarios</h1>
+        <h1 class="text-3xl font-bold text-center my-[1em]">Personal de la Contraloría del Estado Bolivariano de Miranda</h1>
 
     <div class="flex flex-col lg:flex-row items-center w-full gap-5 justify-around">
 
         <div>
-            <button class="btn btn-success">Crear nuevo usuario</button>
+            <button class="btn btn-success" onclick="crearEmpleado.showModal()">Registrar nuevo empleado</button>
         </div>
+
+          <dialog class="modal" id="crearEmpleado">
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Registrar nuevo empleado
+            </h1>
+            
+            <form action="" class="w-100 my-0 mx-auto">
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Cédula</legend>
+                <input type="text" inputmode="numeric" class="input w-100 my-0 mx-auto" placeholder="12345678">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Nombre</legend>
+                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Apellido</legend>
+                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Apellido..">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Departamento al que pertenece el empleado</legend>
+                <select name="" class="select w-100"
+                hx-get="/api/departamentos"
+                hx-trigger="load"
+                hx-swap="beforeend">
+                  <option disabled selected value="">Seleccione el departamento</option>
+                </select>
+              </fieldset>
+            </form>
+
+            <div class="modal-action">
+                <button class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
+
+        </dialog>
 
         <div class="dropdown dropdown-right">
         <div tabindex="0" role="button" class="btn m-1">
@@ -95,10 +142,6 @@
         </div>
 
         <div class="button-container flex items-center gap-5">
-            <select name="" id="" class="select">
-                <option disabled selected>Cambiar rol del usuario</option>
-                <option>Admin</option>
-            </select>
             <button class="btn btn-error">Eliminar</button>
         </div>
 
@@ -108,7 +151,9 @@
 
             <table class="table" 
             hx-get="/api/personal"
-            hx-trigger="load">
+            hx-trigger="load"
+            hx-indicator="#loadPersonal">
+            <span id="loadPersonal" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>
         </div>
 

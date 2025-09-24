@@ -89,12 +89,40 @@
             <h1 class="text-3xl font-bold text-center">
               Crear nuevo usuario
             </h1>
-            <label for="">Hola</label>
-            <input type="text">
+            
+            <form action="" class="w-100 my-0 mx-auto">
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Nombre de usuario</legend>
+                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Usuario...">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Contraseña</legend>
+                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Contraseña...">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Confirme Contraseña</legend>
+                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Confirme contraseña...">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Rol del usuario</legend>
+                <select name="" class="select w-100"
+                hx-get="/api/roles"
+                hx-trigger="load"
+                hx-swap="beforeend">
+                  <option disabled selected value="">Seleccione el rol</option>
+                </select>
+              </fieldset>
+            </form>
+
             <div class="modal-action">
-              <form method="dialog">
-                <button class="btn">Cerrar</button>
-              </form>
+                <button class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
             </div>
           </div>
           <form action="" method="dialog" class="modal-backdrop">
@@ -128,7 +156,9 @@
         <div class="overflow-x-auto overflow-y-auto max-h-120 mx-3">
             <table class="table"
             hx-get="/api/users"
-            hx-trigger="load">
+            hx-trigger="load"
+            hx-indicator="#loadUser">
+            <span id="loadUser" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>
         </div>
 
