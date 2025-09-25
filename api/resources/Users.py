@@ -48,7 +48,15 @@ class UsersResource(Resource):
     def post(self):
         """Crear nuevo usuario"""
         try:
-            args = post_parser.parse_args()
+            if request.headers.get('Content-Type') == 'application/json':
+                args = post_parser.parse_args()
+            else:
+                args = {
+                    'username': request.form.get('username'),
+                    'password': request.form.get('password'),
+                    'confirm_password': request.form.get('confirm_password'),
+                    'id_rol': request.form.get('id_rol')
+                }
             errores = []
             
             try:
@@ -89,11 +97,28 @@ class UsersResource(Resource):
 
 
             if errores:
-                return {
-                    'success': False,
-                    'errors': errores,
-                    'message': 'Hubo un problema al registrar el nuevo usuario'
-                }
+                if request.headers.get('HX-Request') == 'true':
+                    errors_html = """
+                        <div class="container">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold">Errores de validación:</h3>
+                                <ul class="list-disc pl-5">
+                                    {}
+                                </ul>
+                            </div>
+                        </div>                    
+                    """.format("".join(f"<li>{ error }</li>" for error in errores))
+                    return make_response(errors_html, 400)
+                    
+                else:
+                    return {
+                        'success': False,
+                        'errors': errores,
+                        'message': 'Hubo un problema al registrar el nuevo usuario'
+                    }, 400
 
             nuevo_usuario = User(
                 username=args['username'],
@@ -104,6 +129,18 @@ class UsersResource(Resource):
             db.session.add(nuevo_usuario)
             db.session.commit()
             
+            if request.headers.get('HX-Request') == 'true':
+                return make_response( """
+                    <div>
+                        <div role="alert" class="alert alert-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>¡Usuario creado exitosamente!</span>
+                        </div>                             
+                    </div>
+                """, 201)
+
             return {
                 'success': True,
                 'data': nuevo_usuario.to_dict(),
@@ -111,12 +148,24 @@ class UsersResource(Resource):
             }, 201
         except Exception as e:
             db.session.rollback()
+
+            if request.headers.get('HX-Request') == 'true':
+                return make_response(f"""
+                    <div role="alert" class="alert alert-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Ha ocurrido un error al crear al usuario: {str(e)}.</span>
+                    </div>
+                """)
+
             return {
                 'success': False,
                 'error': str(e),
                 'message': 'Error al crear usuario'
             }, 500
         
+
 class UserResource(Resource):
         def put(self, user_id):
             """ Actualizar usuario existente """

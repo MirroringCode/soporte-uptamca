@@ -198,6 +198,7 @@ class SoporteStatusResource(Resource):
     def get(self):
         try:
             atendido_param = request.args.get('atendido')
+            formato_param = request.args.get('formato')
             query = Soporte.query
 
             if atendido_param == 'si':
@@ -205,11 +206,14 @@ class SoporteStatusResource(Resource):
             elif atendido_param == 'no':
                 query = query.filter(Soporte.atendido == False).order_by(desc(Soporte.fecha))
             
-            
             soportes = query.all()
 
             if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
-                html = render_template('soportes/partials/soporte-reciente-card.html', soportes=soportes)
+                html = None
+                if formato_param == 'card':
+                    html = render_template('soportes/partials/soporte-reciente-card.html', soportes=soportes)
+                if formato_param == 'table' or formato_param == None:
+                    html = render_template('soportes/partials/table.html', soportes=soportes)
                 return make_response(html, 200)
 
             return {

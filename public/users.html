@@ -89,36 +89,45 @@
             <h1 class="text-3xl font-bold text-center">
               Crear nuevo usuario
             </h1>
+ 
+            <div id="response" class="mb-4"></div>
+
             
-            <form action="" class="w-100 my-0 mx-auto">
+            <form class="w-100 my-0 mx-auto" 
+            hx-post="/api/users"
+            hx-target="#response"
+            hx-trigger="submit"
+            hx-swap="innerHTML"
+            id="crearUsuarioForm">
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Nombre de usuario</legend>
-                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Usuario...">
+                <input type="text" name="username" class="input w-100 my-0 mx-auto" placeholder="Usuario...">
               </fieldset>
 
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Contraseña</legend>
-                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Contraseña...">
+                <input type="password" name="password" class="input w-100 my-0 mx-auto" placeholder="Contraseña...">
               </fieldset>
 
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Confirme Contraseña</legend>
-                <input type="text" class="input w-100 my-0 mx-auto" placeholder="Confirme contraseña...">
+                <input type="password" name="confirm_password" class="input w-100 my-0 mx-auto" placeholder="Confirme contraseña...">
               </fieldset>
 
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Rol del usuario</legend>
-                <select name="" class="select w-100"
+                <select name="id_rol" id class="select w-100"
                 hx-get="/api/roles"
                 hx-trigger="load"
-                hx-swap="beforeend">
+                hx-swap="beforeend"
+                hx-target="this">
                   <option disabled selected value="">Seleccione el rol</option>
                 </select>
               </fieldset>
             </form>
 
             <div class="modal-action">
-                <button class="btn btn-success">Aceptar</button>
+                <button type="submit" form="crearUsuarioForm" class="btn btn-success">Aceptar</button>
                 <form method="dialog">
                   <button class="btn">Cerrar</button>
                 </form>
@@ -143,18 +152,19 @@
         </ul>
         </div> -->
 
-        <div class="button-container flex items-center gap-5">
+<!--         <div class="button-container flex items-center gap-5">
             <select name="" id="" class="select">
                 <option disabled selected>Cambiar rol del usuario</option>
                 <option>Admin</option>
             </select>
             <button class="btn btn-error">Eliminar</button>
-        </div>
+        </div> -->
 
     </div>
 
         <div class="overflow-x-auto overflow-y-auto max-h-120 mx-3">
             <table class="table"
+            id="users-table"
             hx-get="/api/users"
             hx-trigger="load"
             hx-indicator="#loadUser">
@@ -169,5 +179,6 @@
     </div>
 </div>
 <script type="module" src="../src/main.js"></script>
+<script type="module" src="../src/users/main.js"></script>
 </body>
 </html>

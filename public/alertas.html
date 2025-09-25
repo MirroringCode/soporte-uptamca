@@ -74,12 +74,12 @@
           </svg>
         </label>
 
-        <h1 class="text-3xl font-bold text-center my-[1em]">Listado de soportes</h1>
+        <h1 class="text-3xl font-bold text-center my-[1em]">Listado de alertas</h1>
 
     <div class="flex flex-col lg:flex-row items-center w-full gap-5 justify-around">
 
         <div>
-            <button class="btn btn-success">Crear nuevo soporte</button>
+            <button class="btn btn-success">Crear nueva alerta</button>
         </div>
 
         <div class="dropdown dropdown-right">
@@ -97,7 +97,7 @@
     </div>
         <div class="overflow-x-auto overflow-y-auto max-h-120 mx-3">
             <table class="table" 
-            hx-get="/api/soportes"
+            hx-get="/api/soporte_estatus?atendido=no&formato=table"
             hx-trigger="load"
             hx-indicator="#loadSoporte">
             <span id="loadSoporte" class="loading loading-spinner loading-xl htmx-indicator"></span>
