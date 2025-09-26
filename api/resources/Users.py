@@ -5,6 +5,7 @@ from common.validator import (
     validate_length,
     validate_numeric
 )
+from common.check_htmx_request import is_htmx_request
 from models import User, Rol
 from db import db
 
@@ -28,7 +29,7 @@ class UsersResource(Resource):
         try:
             users = User.query.all()
 
-            if 'text/html' in request.headers.get('Accept', '') or request.headers.get('HX-Request') == 'true':
+            if is_htmx_request():
                 html = render_template('users/partials/table.html', users=users)
                 return make_response(html, 200)
 
@@ -97,7 +98,7 @@ class UsersResource(Resource):
 
 
             if errores:
-                if request.headers.get('HX-Request') == 'true':
+                if is_htmx_request():
                     errors_html = """
                         <div class="container">
                             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -129,18 +130,14 @@ class UsersResource(Resource):
             db.session.add(nuevo_usuario)
             db.session.commit()
             
-            if request.headers.get('HX-Request') == 'true':
-                return make_response( """
-                    <div>
-                        <div role="alert" class="alert alert-success">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>¡Usuario creado exitosamente!</span>
-                        </div>                             
-                    </div>
-                """, 201)
-
+            if is_htmx_request():
+                html = render_template('/components/alert.html', 
+                                       success=True,
+                                       message='¡Usuario creado exitosamente!',
+                                       alert_type='alert-success')
+                
+                return make_response(html, 201)
+            
             return {
                 'success': True,
                 'data': nuevo_usuario.to_dict(),
@@ -150,14 +147,10 @@ class UsersResource(Resource):
             db.session.rollback()
 
             if request.headers.get('HX-Request') == 'true':
-                return make_response(f"""
-                    <div role="alert" class="alert alert-error">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Ha ocurrido un error al crear al usuario: {str(e)}.</span>
-                    </div>
-                """)
+                html = render_template('/components/alert.html',
+                                       message=str(e),
+                                       alert_type="alert-error")
+                return make_response(html, 500)
 
             return {
                 'success': False,
@@ -231,7 +224,16 @@ class UserResource(Resource):
         def delete(self, user_id):
             try:
                 user = User.query.get(user_id)
+
                 if not user:
+
+                    if is_htmx_request():
+                        html = render_template('/components/alert.html',
+                                               success=False,
+                                               message='No sé encontro este usuario',
+                                               alert_type='alert-error')
+                        return make_response(html, 404)
+
                     return {
                         'success': False,
                         'message': 'No se encontró este usuario'
@@ -239,6 +241,13 @@ class UserResource(Resource):
 
 
                 if user.soportes and len(user.soportes) > 0:
+                    if is_htmx_request():
+                        html = render_template('/components/alert.html',
+                                               success=False, 
+                                               message='Hay soportes vinculados a este usuario y no se puede borrar',
+                                               alert_type='alert-error')
+                        return make_response(html, 403)
+                    
                     return {
                         'success': False,
                         'message': 'Hay soportes vinculados a este usuario y no se puede borrar'
@@ -246,6 +255,13 @@ class UserResource(Resource):
 
                 db.session.delete(user)
                 db.session.commit()
+
+                if is_htmx_request():                  
+                        html = render_template('/components/alert.html',
+                            success=True,
+                            message='¡Usuario eliminado exitosamente!',
+                            alert_type='alert-success')
+                        return make_response(html, 200)
 
                 return {
                     'success': True,
