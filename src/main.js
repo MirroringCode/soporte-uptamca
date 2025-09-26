@@ -1,9 +1,8 @@
-import htmx  from 'htmx.org'
-import Mustache from 'mustache'
+import htmx from 'htmx.org'
+import 'htmx-ext-response-targets'
 import { swapTheme } from "./utils/swapTheme";
 import { checkAllTable } from "./utils/checkboxAllTable";
 import { config } from './config';
-
 
 htmx.config.selfRequestsOnly = false;
 document.body.addEventListener('htmx:configRequest', (e) => {

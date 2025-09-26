@@ -8,7 +8,8 @@
     </h5>
     <link rel="stylesheet" href="../src/styles.css">
 </head>
-<body>
+<body hx-ext="response-targets">
+
     <div class="drawer lg:drawer-open">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col gap-7 min-h-screen">
@@ -85,6 +86,9 @@
         </div>
 
         <dialog class="modal" id="crearUsuario">
+            <div data-message class="toast hidden">
+  
+            </div>
           <div class="modal-box">
             <h1 class="text-3xl font-bold text-center">
               Crear nuevo usuario
@@ -95,8 +99,9 @@
             
             <form class="w-100 my-0 mx-auto" 
             hx-post="/api/users"
-            hx-target="#response"
-            hx-trigger="submit"
+            hx-target="[data-message]"
+            hx-target-422="#response"
+            hx-target-5*="[data-message]"
             hx-swap="innerHTML"
             id="crearUsuarioForm">
               <fieldset class="fielset w-100 my-[1.5em]">

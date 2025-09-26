@@ -111,14 +111,14 @@ class UsersResource(Resource):
                             </div>
                         </div>                    
                     """.format("".join(f"<li>{ error }</li>" for error in errores))
-                    return make_response(errors_html, 400)
+                    return make_response(errors_html, 422)
                     
                 else:
                     return {
                         'success': False,
                         'errors': errores,
                         'message': 'Hubo un problema al registrar el nuevo usuario'
-                    }, 400
+                    }, 422
 
             nuevo_usuario = User(
                 username=args['username'],

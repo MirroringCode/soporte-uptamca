@@ -14,6 +14,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",
     "daisyui": "^5.0.43",
+    "htmx-ext-response-targets": "^2.0.3",
     "htmx.org": "^2.0.4",
     "mustache": "^4.2.0",
     "tailwindcss": "^4.1.8"
