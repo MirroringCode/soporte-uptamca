@@ -4,6 +4,8 @@ import { swapTheme } from "./utils/swapTheme";
 import { checkAllTable } from "./utils/checkboxAllTable";
 import { config } from './config';
 
+window.htmx = htmx;
+
 htmx.config.selfRequestsOnly = false;
 document.body.addEventListener('htmx:configRequest', (e) => {
     const path = e.detail.path;
