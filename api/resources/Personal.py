@@ -7,6 +7,7 @@ from common.validator import (
     validate_numeric,
     validate_regex
 )
+from common.check_htmx_request import is_htmx_request
 from db import db
 
 
@@ -22,21 +23,14 @@ put_parser.add_argument('nombre', type=str, required=False, help='Debe indicar e
 put_parser.add_argument('apellido', type=str, required=False, help='Debe indicar el apellido del empleado', location='json')
 put_parser.add_argument('id_departamento', type=int, required=False, help='Debe indicar a que departamento pertenece el empleado', location='json') 
 
-""" PENDIENTE POR HACER
-- """
-
 class PersonalResource(Resource):
     """ Método para traer todos los empleados existentes en base de datos """
     def get(self):
         try:
             # Hace consulta a la base de datos
-            empleados = Personal.query.all()
-            
+            empleados = Personal.query.all()          
 
-            if 'text/html' in request.headers.get('Accept', '') or request.headers.get('HX-Request') == 'true':
-
-               
-
+            if is_htmx_request():
                 html = render_template('personal/partials/table.html', empleados=empleados)
                 return make_response(html, 200)
  
@@ -58,7 +52,16 @@ class PersonalResource(Resource):
     """ Método para crear un nuevo empleado """
     def post(self):
         try:
-            args = post_parser.parse_args()
+            if request.headers.get('Content-Type') == 'application/json':
+                args = post_parser.parse_args()
+            else :
+                args = {
+                    'cedula': request.form.get('cedula'),
+                    'nombre': request.form.get('nombre'),
+                    'apellido': request.form.get('apellido'),
+                    'id_departamento': request.form.get('id_departamento')
+                }
+
             errores = []
             if Personal.query.filter_by(cedula=args['cedula']).first():
                 errores.append('Ya existe un empleado con esa cédula')
@@ -93,6 +96,23 @@ class PersonalResource(Resource):
                 errores.append(str(e)) 
 
             if errores:
+
+                if is_htmx_request():
+                    errors_html = """
+                        <div class="container">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold">Errores de validación:</h3>
+                                <ul class="list-disc pl-5">
+                                    {}
+                                </ul>
+                            </div>
+                        </div>                    
+                    """.format("".join(f"<li>{ error }</li>" for error in errores))
+                    return make_response(errors_html, 422)
+
                 return {
                     'success': False,
                     'errors': errores,
@@ -109,12 +129,26 @@ class PersonalResource(Resource):
             db.session.add(nuevo_empleado)
             db.session.commit()
 
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=True,
+                                       message='¡Empleado creado exitosamente',
+                                       alert_type='alert-success')
+                return make_response(html, 201)
+
             return {
                 'success': True,
                 'message': 'Empleado creado exitosamente',
             }, 201
         except Exception as e:
             db.session.rollback()
+
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=False,
+                                       message=str(e),
+                                       alert_type='alert-error')
+                return make_response(html, 500)
             return {
                 'success': False,
                 'error': str(e),
