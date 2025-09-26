@@ -10,6 +10,10 @@
 </head>
 <body hx-ext="response-targets">
 
+    <div data-notification class="toast toast-top z-5">
+
+    </div>
+
     <div class="drawer lg:drawer-open">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col gap-7 min-h-screen">
@@ -86,22 +90,23 @@
         </div>
 
         <dialog class="modal" id="crearUsuario">
-            <div data-message class="toast hidden">
-  
-            </div>
+          <div class="toast toast-top" data-user-toast>
+          </div>
           <div class="modal-box">
             <h1 class="text-3xl font-bold text-center">
               Crear nuevo usuario
             </h1>
  
+
             <div id="response" class="mb-4"></div>
 
             
-            <form class="w-100 my-0 mx-auto" 
+            <form method="POST" class="w-100 my-0 mx-auto" 
             hx-post="/api/users"
-            hx-target="[data-message]"
+            hx-target="div[data-user-toast]"
+            hx-disabled-elt="button[type='submit']"
             hx-target-422="#response"
-            hx-target-5*="[data-message]"
+            hx-target-500="div[data-user-toast]"
             hx-swap="innerHTML"
             id="crearUsuarioForm">
               <fieldset class="fielset w-100 my-[1.5em]">
@@ -123,7 +128,7 @@
                 <legend class="fieldset-legend">Rol del usuario</legend>
                 <select name="id_rol" id class="select w-100"
                 hx-get="/api/roles"
-                hx-trigger="load"
+                hx-trigger="click once, keydown[key=='Enter'] once"
                 hx-swap="beforeend"
                 hx-target="this">
                   <option disabled selected value="">Seleccione el rol</option>
@@ -171,7 +176,7 @@
             <table class="table"
             id="users-table"
             hx-get="/api/users"
-            hx-trigger="load"
+            hx-trigger="load, userCreated from:#crearUsuario, userDeleted from:body"
             hx-indicator="#loadUser">
             <span id="loadUser" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>

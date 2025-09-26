@@ -20,7 +20,22 @@
                 <button class="btn btn-xs btn-primary">
                     Editar
                 </button>
-                <button class="btn btn-xs my-[.75em] btn-error">
+                <button
+                data-eliminar
+                hx-delete="/api/users/{{ user.id }}"
+                hx-trigger="click"
+                hx-confirm="¿Está seguro de borrar este usuario?"
+                hx-target="[data-notification]"
+                hx-target-4*="[data-notification]"
+                hx-on::after-request="
+                const toast = document.querySelector('[data-notification]');
+                htmx.trigger(document.body, 'userDeleted');
+                
+                setTimeout(() => {
+                    toast.innerHTML = '';
+                }, 1500);
+                "
+                class="btn btn-xs my-[.75em] btn-error">
                     Eliminar
                 </button>
                 <button class="btn btn-xs my-[.75em] btn-warning">
