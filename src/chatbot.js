@@ -148,7 +148,7 @@ function addBotMessage(htmlContent) {
     const messageHtml = `
         <div class="chat chat-start">
             <div class="chat-image avatar">
-                <div class="w-10 rounded-full"><img alt="Avatar del Asistente" src="Imagenes/bot.jpg" /></div>
+                <div class="w-10 rounded-full"><img alt="Avatar del Asistente" src="../public/img/bot.jpg" /></div>
             </div>
             <div class="chat-bubble">${htmlContent}</div>
         </div>`;
