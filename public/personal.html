@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="../src/styles.css">
 </head>
 <body hx-ext="response-targets">
+
+<div data-notification class="toast toast-top z-5">
+
+</div>
+
 <div class="drawer lg:drawer-open">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col gap-7 min-h-screen">
@@ -84,59 +89,60 @@
 
           <dialog class="modal" id="crearEmpleado">
 
-          <div class="toast toast-top" data-empleado-toast></div>
+            <div class="toast toast-top" data-toast data-empleado-toast></div>
 
-          <div id="response" class="mb-4"></div>
-
-          <div class="modal-box">
-            <h1 class="text-3xl font-bold text-center">
-              Registrar nuevo empleado
-            </h1>
             
-            <form method="POST" id="crearEmpleadoForm" 
-            hx-post="/api/personal"
-            hx-target="div[data-empleado-toast]"
-            hx-target-422="#response"
-            hx-target-500="div[data-empleado-toast]"
-            class="w-100 my-0 mx-auto">
-              <fieldset class="fielset w-100 my-[1.5em]">
-                <legend class="fieldset-legend">Cédula</legend>
-                <input type="text" name="cedula" inputmode="numeric" class="input w-100 my-0 mx-auto" placeholder="12345678">
-              </fieldset>
+            <div class="modal-box">
+              <h1 class="text-3xl font-bold text-center">
+                Registrar nuevo empleado
+              </h1>
 
-              <fieldset class="fielset w-100 my-[1.5em]">
-                <legend class="fieldset-legend">Nombre</legend>
-                <input type="text" name="nombre" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
-              </fieldset>
+              <div id="response" class="mb-4"></div>
+              
+              <form method="POST" id="crearEmpleadoForm" 
+              hx-post="/api/personal"
+              hx-target="div[data-empleado-toast]"
+              hx-target-422="#response"
+              hx-target-500="div[data-empleado-toast]"
+              class="w-100 my-0 mx-auto">
+                <fieldset class="fielset w-100 my-[1.5em]">
+                  <legend class="fieldset-legend">Cédula</legend>
+                  <input type="text" name="cedula" inputmode="numeric" class="input w-100 my-0 mx-auto" placeholder="12345678">
+                </fieldset>
 
-              <fieldset class="fielset w-100 my-[1.5em]">
-                <legend class="fieldset-legend">Apellido</legend>
-                <input type="text" name="apellido" class="input w-100 my-0 mx-auto" placeholder="Apellido..">
-              </fieldset>
+                <fieldset class="fielset w-100 my-[1.5em]">
+                  <legend class="fieldset-legend">Nombre</legend>
+                  <input type="text" name="nombre" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
+                </fieldset>
 
-              <fieldset class="fielset w-100 my-[1.5em]">
-                <legend class="fieldset-legend">Departamento al que pertenece el empleado</legend>
-                <select name="id_departamento" class="select w-100"
-                hx-get="/api/departamentos"
-                hx-trigger="click once, keydown[key=='Enter'] once"
-                hx-target="this"
-                hx-swap="beforeend">
-                  <option disabled selected value="">Seleccione el departamento</option>
-                </select>
-              </fieldset>
-            </form>
+                <fieldset class="fielset w-100 my-[1.5em]">
+                  <legend class="fieldset-legend">Apellido</legend>
+                  <input type="text" name="apellido" class="input w-100 my-0 mx-auto" placeholder="Apellido..">
+                </fieldset>
 
-            <div class="modal-action">
-                <button type="submit" form="crearEmpleadoForm" class="btn btn-success">Aceptar</button>
-                <form method="dialog">
-                  <button class="btn">Cerrar</button>
-                </form>
+                <fieldset class="fielset w-100 my-[1.5em]">
+                  <legend class="fieldset-legend">Departamento al que pertenece el empleado</legend>
+                  <select name="id_departamento" class="select w-100"
+                  hx-get="/api/departamentos"
+                  hx-trigger="click once, keydown[key=='Enter'] once"
+                  hx-target="this"
+                  hx-swap="beforeend">
+                    <option disabled selected value="">Seleccione el departamento</option>
+                  </select>
+                </fieldset>
+              </form>
 
+              <div class="modal-action">
+                  <button type="submit" form="crearEmpleadoForm" class="btn btn-success">Aceptar</button>
+                  <form method="dialog">
+                    <button class="btn">Cerrar</button>
+                  </form>
+
+              </div>
             </div>
-          </div>
-          <form action="" method="dialog" class="modal-backdrop">
-            <button></button>
-          </form>
+            <form action="" method="dialog" class="modal-backdrop">
+              <button></button>
+            </form>
 
         </dialog>
 
@@ -162,8 +168,9 @@
 
             <table class="table" 
             hx-get="/api/personal"
-            hx-trigger="load"
-            hx-indicator="#loadPersonal">
+            hx-trigger="load, empleadoCreated from:#crearEmpleado, userDeleted from:body"
+            hx-indicator="#loadPersonal"
+            id="table-personal">
             <span id="loadPersonal" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>
         </div>
@@ -175,5 +182,6 @@
     </div>
 </div>
 <script type="module" src="../src/main.js"></script>
+<script type="module" src="../src/personal/main.js"></script>
 </body>
 </html>

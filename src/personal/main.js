@@ -3,34 +3,33 @@ import { closeAllModals } from "../utils/closeAllModals";
 const elements = {
     modals: document.querySelectorAll('dialog'),
     forms: {
-        crear: document.getElementById('crearUsuarioForm')
+        crear: document.getElementById('crearEmpleadoForm')
     },
-    errorContainer: document.getElementById('response'),
-    table: document.querySelector('#users-table')
+    errorContainer: document.querySelector('#response'),
+    table: document.querySelector('#table-personal')
 }
 
 
-
 elements.forms.crear.addEventListener('htmx:afterRequest', (e) => {
-    const modal = document.querySelector('dialog#crearUsuario');
+    const modal = document.querySelector('dialog#crearEmpleado');
     const errorContainer = modal.querySelector('#response');
-    const toastContainer = modal.querySelector('[data-user-toast]');
+    const toastContainer = modal.querySelector('[data-empleado-toast]');
     const request = e.detail.xhr;
 
     if (request.status === 201) {
         errorContainer.innerHTML = '';
-        
-        htmx.trigger(modal, 'userCreated');
+
+        htmx.trigger(modal, 'empleadoCreated');
 
         setTimeout(() => {
-            toastContainer.innerHTML = ''; // Limpiar el toast
+            toastContainer.innerHTML = '';
             modal.close();
         }, 1000);
 
         e.target.reset();
-    } else if(request.status === 422) {
+    } else if (request.status === 422) {
         toastContainer.innerHTML = '';
     }
-})
+});
 
-closeAllModals(elements.modals)
+closeAllModals(elements.modals);

@@ -22,7 +22,22 @@
                 <button class="btn btn-xs btn-primary">
                     Editar
                 </button>
-                <button class="btn btn-xs my-[.75em] btn-error">
+                <button class="btn btn-xs my-[.75em] btn-error"
+                data-eliminar
+                hx-delete="/api/personal/{{ empleado.id }}"
+                hx-trigger="click"
+                hx-confirm="¿Está seguro de eliminar este empleado?"
+                hx-target="[data-notification]"
+                hx-target-4*="[data-notification]"
+                hx-on::after-request="
+                const toast = document.querySelector('[data-notification]');
+                htmx.trigger(document.body, 'empleadoDeleted');
+
+                setTimeout(() => {
+                    toast.innerHTML = '';
+                }, 1500);
+                "
+                >
                     Eliminar
                 </button>
             </td>

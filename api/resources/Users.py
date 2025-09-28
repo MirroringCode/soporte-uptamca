@@ -230,7 +230,7 @@ class UserResource(Resource):
                     if is_htmx_request():
                         html = render_template('/components/alert.html',
                                                success=False,
-                                               message='No sé encontro este usuario',
+                                               message='No se encontro este usuario',
                                                alert_type='alert-error')
                         return make_response(html, 404)
 
