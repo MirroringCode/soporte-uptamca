@@ -235,12 +235,26 @@ class EmpleadoResource(Resource):
         try:
             empleado = Personal.query.get(personal_id)
             if not empleado:
+
+                if is_htmx_request(): 
+                    html = render_template('/components/alert.html', 
+                                           success=False,
+                                           message='No se encontró a este empleado',
+                                           alert_type='alert_error')
+                    return make_response(html, 404)
+
                 return {
                     'success': False,
                     'message': 'Empleado no encontrado'
                 }, 404
             
             if empleado.soportes_solicitados and len(empleado.soportes_solicitados) > 0:
+                if is_htmx_request():
+                    html = render_template('/components/alert.html',
+                                           success=True,
+                                           message='Hay soportes solicitados vinculados a este empleado',
+                                           alert_type='alert_error'
+                                           )
                 return {
                     'success': False,
                     'message': 'Hay soportes solicitados vinculados a este empleado y no se puede borrar'
