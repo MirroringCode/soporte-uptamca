@@ -4,6 +4,7 @@ from sqlalchemy import desc, func
 from datetime import datetime, timedelta
 from models import Soporte, Personal, User, Departamento
 from db import db
+from common.check_htmx_request import is_htmx_request
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('motivo', type=str, required=True, help='Debe indicar el motivo del soporte')
@@ -45,7 +46,17 @@ class SoportesResource(Resource):
 
     def post(self):
         try:
-            args = post_parser.parse_args()
+            if request.headers.get('Content-Type') == 'application/json':
+                args = post_parser.parse_args()
+            else:
+                args = {
+                    'motivo': request.form.get('motivo'),
+                    'atendido': request.form.get('atendido'),
+                    'atendido_por': request.form.get('atendido_por'),
+                    'id_personal': request.form.get('id_personal'),
+                    'id_departamento': request.form.get('id_departamento'),
+                    'fecha': request.form.get('fecha')
+                }
             errores = []
             empleado = Personal.query.get(args['id_personal'])
             tecnico = User.query.get(args['atendido_por'])
@@ -59,11 +70,28 @@ class SoportesResource(Resource):
                 errores.append('No se ha encontrado el departamento')
 
             if errores:
+                if is_htmx_request():
+                    errors_html = """
+                        <div class="container">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold">Errores de validación:</h3>
+                                <ul class="list-disc pl-5">
+                                    {}
+                                </ul>
+                            </div>
+                        </div>                    
+                    """.format("".join(f"<li>{ error }</li>" for error in errores))
+                    return make_response(errors_html, 422)
+                    
+
                 return {
                     'success': False,
                     'errors': errores,
                     'message': 'Ha habido un error registrando el soporte'
-                }
+                }, 422
 
             nuevo_soporte = Soporte(
                 motivo=args['motivo'],
@@ -77,12 +105,25 @@ class SoportesResource(Resource):
             db.session.add(nuevo_soporte)
             db.session.commit()
 
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=True,
+                                       message='¡Alerta creada exitosamente!',
+                                       alert_type='alert-success')
+                return make_response(html, 201)
             return {
                 'success': True,
                 'message': 'Soporte creado exitosamente'
             }, 201
         except Exception as e:
             db.session.rollback()
+
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=False,
+                                       message=str(e),
+                                       alert_type='alert-error')
+                return make_response(html, 500)
             return {
                 'success': False,
                 'error': str(e),
@@ -239,15 +280,18 @@ class SoportesCountResource(Resource):
             inicio_mes = hoy.replace(day=1)
 
             diarios = Soporte.query.filter(
-                Soporte.fecha >= inicio_dia
+                Soporte.fecha >= inicio_dia,
+                Soporte.atendido == 1
             ).count()
 
             semanales = Soporte.query.filter(
-                Soporte.fecha >= inicio_semana
+                Soporte.fecha >= inicio_semana,
+                Soporte.atendido == 1
             ).count()
 
             mensuales = Soporte.query.filter(
-                Soporte.fecha >= inicio_mes
+                Soporte.fecha >= inicio_mes,
+                Soporte.atendido == 1
             ).count()
 
             if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':

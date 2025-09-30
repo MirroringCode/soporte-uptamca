@@ -1,13 +1,14 @@
 from flask import request, render_template, make_response
 from flask_restful import Resource
 from models import Departamento
+from common.check_htmx_request import is_htmx_request
 
 class DepartamentoResource(Resource):
     def get(self):
         try:
             departamentos = Departamento.query.all()
 
-            if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
+            if is_htmx_request():
                 html = render_template('personal/partials/departamentos_options.html', departamentos=departamentos)
                 return make_response(html, 200)
 

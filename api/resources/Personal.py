@@ -240,7 +240,7 @@ class EmpleadoResource(Resource):
                     html = render_template('/components/alert.html', 
                                            success=False,
                                            message='No se encontró a este empleado',
-                                           alert_type='alert_error')
+                                           alert_type='alert-error')
                     return make_response(html, 404)
 
                 return {
@@ -251,10 +251,11 @@ class EmpleadoResource(Resource):
             if empleado.soportes_solicitados and len(empleado.soportes_solicitados) > 0:
                 if is_htmx_request():
                     html = render_template('/components/alert.html',
-                                           success=True,
+                                           success=False,
                                            message='Hay soportes solicitados vinculados a este empleado',
-                                           alert_type='alert_error'
+                                           alert_type='alert-error'
                                            )
+                    return make_response(html, 403)
                 return {
                     'success': False,
                     'message': 'Hay soportes solicitados vinculados a este empleado y no se puede borrar'
@@ -262,6 +263,13 @@ class EmpleadoResource(Resource):
 
             db.session.delete(empleado)
             db.session.commit()
+
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=True,
+                                       message="¡Empleado eliminado exitosamente!",
+                                       alert_type='alert-success')
+                return make_response(html, 200)
             return {
                 'success': True,
                 'message': 'Información del empleado eliminada exitosamente'
@@ -272,5 +280,11 @@ class EmpleadoResource(Resource):
                 'error': str(e),
                 'message': 'No se ha podido eliminar información del empleado'
             }, 500
-         
-    
+
+class PersonalOptionResource(Resource):
+    def get(self):
+        personal = Personal.query.all()
+
+        if is_htmx_request():
+            html = render_template('personal/partials/empleados_options.html', personal=personal)
+            return make_response(html, 200)             

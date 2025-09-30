@@ -168,7 +168,7 @@
 
             <table class="table" 
             hx-get="/api/personal"
-            hx-trigger="load, empleadoCreated from:#crearEmpleado, userDeleted from:body"
+            hx-trigger="load, empleadoCreated from:#crearEmpleado, empleadoDeleted from:body"
             hx-indicator="#loadPersonal"
             id="table-personal">
             <span id="loadPersonal" class="loading loading-spinner loading-xl htmx-indicator"></span>

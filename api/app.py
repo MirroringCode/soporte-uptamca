@@ -16,7 +16,7 @@ api = Api(app)
 CORS(app)
 
 from resources.Users import UsersResource, UserResource, PasswordResource
-from resources.Personal import PersonalResource, EmpleadoResource
+from resources.Personal import PersonalResource, EmpleadoResource, PersonalOptionResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
 from resources.Soportes import SoportesResource, SoporteResource, SoporteStatusResource, SoportesCountResource
@@ -27,6 +27,7 @@ api.add_resource(UserResource, '/api/users/<int:user_id>')
 api.add_resource(PasswordResource, '/api/users/reset_password/<int:user_id>')
 
 api.add_resource(PersonalResource, '/api/personal')
+api.add_resource(PersonalOptionResource, '/api/personal_options')
 api.add_resource(EmpleadoResource, '/api/personal/<int:personal_id>')
 
 api.add_resource(SoportesResource, '/api/soportes')

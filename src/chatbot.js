@@ -64,7 +64,7 @@ async function handleUserInput() {
         userData.department = text;
         addBotMessage("Verificando tus datos, un momento por favor...");
         try {
-            const response = await fetch('http://localhost:5000/verify-user', {
+            const response = await fetch('http://localhost:5500/verify-user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -122,7 +122,7 @@ async function selectOption(problemKey, userText) {
     addUserMessage(userText);
 
     try {
-        const response = await fetch('http://localhost:5000/create-ticket', {
+        const response = await fetch('http://localhost:5500/create-ticket', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -181,7 +181,7 @@ async function handleFeedback(response) {
     
     // **INICIO: LÓGICA PARA ACTUALIZAR EL TICKET EN EL BACKEND**
     try {
-        await fetch('http://localhost:5000/update-ticket-status', { // Llama al nuevo endpoint
+        await fetch('http://localhost:5500/update-ticket-status', { // Llama al nuevo endpoint
             method: 'POST', // Usamos POST por simplicidad, aunque PUT/PATCH sería más semántico
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

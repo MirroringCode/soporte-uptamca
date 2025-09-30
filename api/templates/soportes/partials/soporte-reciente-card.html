@@ -5,7 +5,6 @@
         <h2 class="card-title">{{ soporte.motivo }}</h2>
         <p>{{ soporte.departamento.nombre }} - {{ soporte.solicitante.nombre + ' ' + soporte.solicitante.apellido }}</p>
         <div class="justify-end card-actions">
-        <button class="btn btn-primary">Ver</button>
         {% if not soporte.atendido %}
         <button class="btn btn-success">Marcar como atendido</button>
         </div>

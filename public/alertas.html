@@ -6,7 +6,7 @@
     <title>Soportes</title>
     <link rel="stylesheet" href="../src/styles.css">
 </head>
-<body>
+<body hx-ext="response-targets">
 <div class="drawer lg:drawer-open">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col gap-7 min-h-screen">
@@ -79,8 +79,75 @@
     <div class="flex flex-col lg:flex-row items-center w-full gap-5 justify-around">
 
         <div>
-            <button class="btn btn-success">Crear nueva alerta</button>
+            <button class="btn btn-success" onclick="crearAlerta.showModal()">Crear nueva alerta</button>
         </div>
+
+        <dialog class="modal" id="crearAlerta">
+          <div class="toast toast-top" data-toast data-alerta-toast>
+          </div>
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Crear nueva alerta
+            </h1>
+ 
+
+            <div id="response" class="mb-4"></div>
+
+            
+            <form method="POST" class="w-100 my-0 mx-auto"
+            hx-post="/api/soportes" 
+            hx-target="div[data-alerta-toast]"
+            hx-disabled-elt="button[type='submit']"
+            hx-target-422="#response"
+            hx-target-5*="div[data-alerta-toast]"
+            hx-swap="innerHTML"
+            id="crearAlertaForm">
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Motivo</legend>
+                <input type="text" name="motivo" class="input w-100 my-0 mx-auto" placeholder="Motivo...">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Fecha del soporte</legend>
+                <input type="datetime-local" name="fecha" class="input w-100 my-0 mx-auto">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Empleado solicitante</legend>
+                <select name="id_personal" id class="select w-100"
+                hx-get="/api/personal_options"
+                hx-trigger="click once, keydown[key=='Enter'] once"
+                hx-swap="beforeend"
+                hx-target="this">
+                  <option disabled selected value="">Seleccione el empleado</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Departamento</legend>
+                <select name="id_departamento" class="select w-100"
+                hx-get="/api/departamentos"
+                hx-trigger="click once, keydown[key=='Enter'] once"
+                hx-target="this"
+                hx-swap="beforeend">
+                  <option disabled selected value="">Seleccione el departamento</option>
+                </select>
+              </fieldset>
+            </form>
+
+            <div class="modal-action">
+                <button type="submit" form="crearAlertaForm" class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
+        </dialog>
+
 
         <div class="dropdown dropdown-right">
         <div tabindex="0" role="button" class="btn m-1">
@@ -96,9 +163,10 @@
 
     </div>
         <div class="overflow-x-auto overflow-y-auto max-h-120 mx-3">
-            <table class="table" 
+            <table class="table"
+            id="alertas-table" 
             hx-get="/api/soporte_estatus?atendido=no&formato=table"
-            hx-trigger="load"
+            hx-trigger="load, alertaCreated from:dialog#crearAlerta"
             hx-indicator="#loadSoporte">
             <span id="loadSoporte" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>
@@ -112,5 +180,6 @@
     </div>
 </div>
 <script type="module" src="../src/main.js"></script>
+<script type="module" src="../src/alertas/main.js"></script>
 </body>
 </html>
