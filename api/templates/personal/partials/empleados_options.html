@@ -1,0 +1,3 @@
+{% for empleado in personal %}
+    <option value="{{ empleado.id }}">{{ empleado.nombre + ' ' + empleado.apellido }}</option>
+{% endfor %}
