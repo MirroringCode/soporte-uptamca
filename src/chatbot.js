@@ -11,6 +11,7 @@ let userData = { id: null, fullName: "", department: "", departmentId: null };
 let conversationStep = "awaiting_full_name";
 let lastProblemKey = "";
 let optionsShownCount = 0;
+let currentTicketId = null; // Para guardar el ID del ticket actual
 
 // --- Asignación de Eventos ---
 chatBubbleBtn.addEventListener('click', toggleChat);
@@ -38,8 +39,8 @@ function resetSession() {
     chatLog.innerHTML = '';
     optionsShownCount = 0;
     conversationStep = "awaiting_full_name";
-    // **MODIFICADO:** Asegura que todos los campos de userData se reseteen
-    userData = { id: null, fullName: "", department: "", departmentId: null }; 
+    userData = { id: null, fullName: "", department: "", departmentId: null };
+    currentTicketId = null;
     startIdentificationProcess();
 }
 
@@ -49,7 +50,6 @@ function startIdentificationProcess() {
     userInput.focus();
 }
 
-// **MODIFICADO:** Ahora se comunica con el backend para verificar al usuario
 async function handleUserInput() {
     const text = userInput.value.trim();
     if (text === "") return;
@@ -60,14 +60,11 @@ async function handleUserInput() {
         userData.fullName = text;
         addBotMessage(`¡Gracias! Ahora, dime a qué <strong>departamento</strong> perteneces.`);
         conversationStep = 'awaiting_department';
-
     } else if (conversationStep === 'awaiting_department') {
         userData.department = text;
         addBotMessage("Verificando tus datos, un momento por favor...");
-
-        // **INICIO: LÓGICA DE CONEXIÓN CON EL BACKEND**
         try {
-            const response = await fetch('http://localhost:3000/verify-user', {
+            const response = await fetch('http://localhost:5000/verify-user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -76,7 +73,6 @@ async function handleUserInput() {
                 })
             });
             const data = await response.json();
-
             if (data.success) {
                 userData.id = data.employeeId;
                 userData.departmentId = data.departmentId;
@@ -92,7 +88,6 @@ async function handleUserInput() {
             addBotMessage("No pude conectarme con el servidor de verificación. Por favor, inténtalo más tarde.");
             conversationStep = 'awaiting_full_name';
         }
-        // **FIN: LÓGICA DE CONEXIÓN CON EL BACKEND**
     }
 }
 
@@ -119,16 +114,40 @@ function showInitialOptions() {
     addMessageToLog(optionsHtml);
 }
 
-function selectOption(problemKey, userText) {
+// **MODIFICADO:** Ahora crea el ticket inmediatamente
+async function selectOption(problemKey, userText) {
     lastProblemKey = problemKey;
     const oldOptions = document.getElementById('options-bubble') || document.getElementById('feedback-bubble');
     if (oldOptions) { oldOptions.remove(); }
     addUserMessage(userText);
+
+    try {
+        const response = await fetch('http://localhost:5000/create-ticket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                employeeId: userData.id,
+                departmentId: userData.departmentId,
+                problemType: problemKey
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            currentTicketId = data.ticketId; // Guardamos el ID del ticket
+            addBotMessage(`He generado el ticket de soporte N° **${currentTicketId}**. Mientras esperas, aquí tienes una posible solución:`);
+        } else {
+            addBotMessage("Hubo un error al generar tu ticket, pero aquí tienes una posible solución:");
+        }
+    } catch (error) {
+        console.error("Error al crear ticket:", error);
+        addBotMessage("No pude conectar con el servidor para crear el ticket, pero aquí tienes una posible solución:");
+    }
+
     setTimeout(() => {
         const solutionHtml = solutions[problemKey];
         addBotMessage(solutionHtml);
         setTimeout(askForFeedback, 1500);
-    }, 600);
+    }, 800);
 }
 
 function askForFeedback() {
@@ -145,40 +164,35 @@ function askForFeedback() {
     addMessageToLog(feedbackHtml);
 }
 
-// **MODIFICADO:** Ahora se comunica con el backend para registrar el ticket
+// **MODIFICADO:** Ahora actualiza el estado del ticket en lugar de crear uno nuevo
 async function handleFeedback(response) {
     const feedbackBubble = document.getElementById('feedback-bubble');
     if (feedbackBubble) { feedbackBubble.remove(); }
     
-    let status;
+    let status = (response === 'yes') ? 'resolved' : 'escalated';
+
     if (response === 'yes') {
         addUserMessage("Sí, gracias");
-        addBotMessage("¡Excelente! Estoy para servirte. 😊");
-        status = 'resolved';
+        addBotMessage("¡Excelente! He marcado el ticket como **resuelto**. Estoy para servirte. 😊");
     } else {
         addUserMessage("No, necesito más ayuda");
-        addBotMessage("Entendido. He generado un ticket de soporte para el departamento de TI con tus datos. Pronto se pondrán en contacto contigo.");
-        status = 'escalated';
+        addBotMessage(`Entendido. El ticket N° **${currentTicketId}** queda abierto. El equipo de TI se pondrá en contacto contigo.`);
     }
     
-    // **INICIO: LÓGICA DE CONEXIÓN CON EL BACKEND**
+    // **INICIO: LÓGICA PARA ACTUALIZAR EL TICKET EN EL BACKEND**
     try {
-        await fetch('http://localhost:3000/log-ticket', {
-            method: 'POST',
+        await fetch('http://localhost:5000/update-ticket-status', { // Llama al nuevo endpoint
+            method: 'POST', // Usamos POST por simplicidad, aunque PUT/PATCH sería más semántico
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                employeeId: userData.id,
-                departmentId: userData.departmentId,
-                problemType: lastProblemKey,
+                ticketId: currentTicketId,
                 status: status
             })
         });
     } catch (error) {
-        console.error("No se pudo registrar el ticket:", error);
-        // Opcional: Informar al usuario si el registro del ticket falló
-        addBotMessage("⚠️ Hubo un problema al registrar tu ticket. Por favor, contacta a TI directamente.");
+        console.error("No se pudo actualizar el ticket:", error);
     }
-    // **FIN: LÓGICA DE CONEXIÓN CON EL BACKEND**
+    // **FIN: LÓGICA PARA ACTUALIZAR EL TICKET**
 
     setTimeout(showInitialOptions, 2000);
 }
@@ -192,13 +206,13 @@ function addBotMessage(htmlContent) {
     const messageHtml = `
         <div class="chat chat-start">
             <div class="chat-image avatar">
-                <div class="w-10 rounded-full"><img alt="Avatar del Asistente" src="../public/img/bot.jpg" /></div>
+                <div class="w-10 rounded-full"><img alt="Avatar del Asistente" src="images/bot.jpg" /></div>
             </div>
             <div class="chat-bubble">${htmlContent}</div>
         </div>`;
     addMessageToLog(messageHtml);
 }
-
+        
 function addMessageToLog(html) {
     chatLog.insertAdjacentHTML('beforeend', html);
     chatLog.scrollTop = chatLog.scrollHeight;

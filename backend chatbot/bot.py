@@ -4,34 +4,30 @@ import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
 
-# Inicialización de la aplicación Flask
 app = Flask(__name__)
-CORS(app) # Habilita CORS para permitir la comunicación con el frontend
+CORS(app)
 
 # --- CONFIGURACIÓN DE LA CONEXIÓN A MYSQL ---
-# ¡IMPORTANTE! Reemplaza estos valores con los de tu base de datos.
 db_config = {
     'host': 'localhost',
-    'user': 'root', # Tu usuario de MySQL
-    'password': '', # Tu contraseña de MySQL
-    'database': 'soportes-uptamca' # El nombre de tu base de datos
+    'user': 'root',
+    'password': '',
+    'database': 'soportes-uptamca'
 }
 
 # --- ENDPOINTS DE LA API ---
 
 @app.route('/verify-user', methods=['POST'])
 def verify_user():
-    """Verifica al usuario contra las tablas 'personal' y 'departamentos'."""
+    # ... (esta función se mantiene exactamente igual que antes) ...
     data = request.get_json()
     full_name = data.get('fullName', '')
     department_name = data.get('department', '')
 
-    # Asumimos que el nombre completo viene como "Nombre Apellido"
     name_parts = full_name.split(' ', 1)
     first_name = name_parts[0] if len(name_parts) > 0 else ''
     last_name = name_parts[1] if len(name_parts) > 1 else ''
-
-    # Consulta SQL ajustada a tu esquema: personal(Id, nombre, apellido, id_departamente), departamentos(id, nombre)
+    
     query = """
         SELECT p.Id, d.id FROM personal p
         JOIN departamentos d ON p.id_departamente = d.id
@@ -39,21 +35,17 @@ def verify_user():
           AND LOWER(p.apellido) = LOWER(%s)
           AND LOWER(d.nombre) = LOWER(%s)
     """
-
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
         cursor.execute(query, (first_name, last_name, department_name))
         result = cursor.fetchone()
-
         if result:
-            # Si se encuentra, devolvemos el ID del personal y el ID del departamento
             employee_id = result[0]
             department_id = result[1]
             return jsonify({'success': True, 'employeeId': employee_id, 'departmentId': department_id})
         else:
             return jsonify({'success': False, 'message': 'Usuario no encontrado. Verifica tus datos.'})
-
     except Error as e:
         print(f"Error en /verify-user: {e}")
         return jsonify({'success': False, 'message': 'Error en la base de datos.'}), 500
@@ -62,44 +54,46 @@ def verify_user():
             cursor.close()
             conn.close()
 
-
-@app.route('/log-ticket', methods=['POST'])
-def log_ticket():
-    """Registra un nuevo ticket en la tabla 'soportes'."""
+# **NUEVO ENDPOINT PARA CREAR EL TICKET INMEDIATAMENTE**
+@app.route('/create-ticket', methods=['POST'])
+def create_ticket():
+    """Crea un registro inicial en la tabla 'soportes'."""
     data = request.get_json()
     employee_id = data.get('employeeId')
     department_id = data.get('departmentId')
-    problem_type = data.get('problemType')
-    status = data.get('status') # 'resolved' o 'escalated'
+    problem_type = data.get('problemType') # El motivo del soporte
 
-    # El estado 'atendido' será 0 (falso) si el ticket se está escalando
-    atendido_status = 0 if status == 'escalated' else 1
-
-    # Obtenemos la fecha y hora actual
+    # Obtenemos la fecha y hora actual para el campo 'fecha'
     current_timestamp = datetime.now()
 
-    # Consulta SQL ajustada a tu tabla 'soportes'
+    # Consulta para insertar los datos iniciales. 'atendido' y 'atendido_por' quedan con sus valores por defecto.
     query = """
-        INSERT INTO soportes (motivo, atendido, id_personal, id_departamentos, fecha) 
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO soportes (id_personal, id_departamentos, fecha, motivo) 
+        VALUES (%s, %s, %s, %s)
     """
-
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute(query, (problem_type, atendido_status, employee_id, department_id, current_timestamp))
+        # Pasamos los datos que necesita la tabla
+        cursor.execute(query, (employee_id, department_id, current_timestamp, problem_type))
         conn.commit()
-
+        # Devolvemos el ID del ticket recién creado
         return jsonify({'success': True, 'ticketId': cursor.lastrowid})
-
     except Error as e:
-        print(f"Error en /log-ticket: {e}")
-        return jsonify({'success': False, 'message': 'Error al registrar el ticket.'}), 500
+        print(f"Error en /create-ticket: {e}")
+        return jsonify({'success': False, 'message': 'Error al crear el ticket.'}), 500
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
 
-# Iniciar el servidor
+# El endpoint /log-ticket ya no lo usaremos para crear, sino para actualizar, pero lo dejamos por si acaso
+@app.route('/log-ticket', methods=['POST'])
+def log_ticket():
+    # ... (esta función se mantiene igual, aunque ahora usaremos la nueva) ...
+    # ... (puedes borrarla si quieres para limpiar el código) ...
+    pass
+
+
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    app.run(port=5000, debug=True)
