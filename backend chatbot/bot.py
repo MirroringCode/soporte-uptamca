@@ -30,7 +30,7 @@ def verify_user():
     
     query = """
         SELECT p.Id, d.id FROM personal p
-        JOIN departamentos d ON p.id_departamente = d.id
+        JOIN departamentos d ON p.id_departamento = d.id
         WHERE LOWER(p.nombre) = LOWER(%s)
           AND LOWER(p.apellido) = LOWER(%s)
           AND LOWER(d.nombre) = LOWER(%s)
@@ -47,8 +47,8 @@ def verify_user():
         else:
             return jsonify({'success': False, 'message': 'Usuario no encontrado. Verifica tus datos.'})
     except Error as e:
-        print(f"Error en /verify-user: {e}")
-        return jsonify({'success': False, 'message': 'Error en la base de datos.'}), 500
+        print(f"Error en /verify-user: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
@@ -68,7 +68,7 @@ def create_ticket():
 
     # Consulta para insertar los datos iniciales. 'atendido' y 'atendido_por' quedan con sus valores por defecto.
     query = """
-        INSERT INTO soportes (id_personal, id_departamentos, fecha, motivo) 
+        INSERT INTO soportes (id_personal, id_departamento, fecha, motivo) 
         VALUES (%s, %s, %s, %s)
     """
     try:
