@@ -322,3 +322,11 @@ class PasswordResource(Resource):
                 'error': str(e),
                 'message': 'Ha habido un problema reiniciando la clave'
             }, 500
+
+class UserOptionResource(Resource):
+    def get(self):
+        users = User.query.all()
+
+        if is_htmx_request():
+            html = render_template('users/partials/users_options.html', users=users)
+            return make_response(html, 200)             

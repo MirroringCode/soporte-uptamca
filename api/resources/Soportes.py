@@ -51,7 +51,7 @@ class SoportesResource(Resource):
             else:
                 args = {
                     'motivo': request.form.get('motivo'),
-                    'atendido': request.form.get('atendido'),
+                    'atendido': bool(request.form.get('atendido')),
                     'atendido_por': request.form.get('atendido_por'),
                     'id_personal': request.form.get('id_personal'),
                     'id_departamento': request.form.get('id_departamento'),
@@ -214,6 +214,12 @@ class SoporteResource(Resource):
         try:
             soporte = Soporte.query.filter(Soporte.id == soporte_id).first()
             if not soporte:
+                if is_htmx_request():
+                    html = render_template('/components/alert.html', 
+                                           success=False,
+                                           message='No se encontró este soporte',
+                                           alert_type='alert-error')
+                    return make_response(html, 404)
                 return {
                     'success': False,
                     'message': 'Soporte no encontrado',
@@ -221,6 +227,12 @@ class SoporteResource(Resource):
             
             db.session.delete(soporte)
             db.session.commit()
+            if is_htmx_request():
+                    html = render_template('/components/alert.html', 
+                                           success=True,
+                                           message='¡Soporte eliminado exitosamente!',
+                                           alert_type='alert-success')
+                    return make_response(html, 200)
             return {
                 'success': True,
                 'message': 'soporte borrado exitosamente',
@@ -274,39 +286,34 @@ class SoportesCountResource(Resource):
     def get(self):
         try:
 
-            hoy = datetime.today()
-            inicio_dia = hoy.replace(hour=0, minute=0, second=0, microsecond=0)
-            inicio_semana = hoy - timedelta(days=hoy.weekday())
-            inicio_mes = hoy.replace(day=1)
+            # hoy = datetime.today()
+            # inicio_dia = hoy.replace(hour=0, minute=0, second=0, microsecond=0)
+            # inicio_semana = hoy - timedelta(days=hoy.weekday())
+            # inicio_mes = hoy.replace(day=1)
 
-            diarios = Soporte.query.filter(
-                Soporte.fecha >= inicio_dia,
+            atendidos = Soporte.query.filter(
                 Soporte.atendido == 1
             ).count()
 
-            semanales = Soporte.query.filter(
-                Soporte.fecha >= inicio_semana,
-                Soporte.atendido == 1
+            no_atendidos = Soporte.query.filter(
+                Soporte.atendido == 0
             ).count()
 
-            mensuales = Soporte.query.filter(
-                Soporte.fecha >= inicio_mes,
-                Soporte.atendido == 1
-            ).count()
+            total = Soporte.query.count()
 
-            if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
+            if is_htmx_request():
                 html = render_template('soportes/partials/conteo.html', 
-                                       diarios=diarios, 
-                                       semanales=semanales, 
-                                       mensuales=mensuales)
+                                       atendidos=atendidos, 
+                                       no_atendidos=no_atendidos, 
+                                       total=total)
                 return make_response(html, 200)
 
             return {
                 'success': True,
                 'data': {
-                    'diarios': diarios,
-                    'semanales': semanales,
-                    'mensuales': mensuales
+                    'atendidos': atendidos,
+                    'no_atendidos': no_atendidos,
+                    'total': total
                 },
                 'message': 'Conteo obtenido exitosamente'
             }, 200

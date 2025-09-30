@@ -1,20 +1,20 @@
 <div class="stats shadow">
     <div class="stat">
-        <div class="stat-title">Soportes realizados en el día</div>
-        <div class="stat-value">{{ diario or 0 }}</div>
+        <div class="stat-title">Soportes sin atender</div>
+        <div class="stat-value">{{ no_atendidos or 0 }}</div>
     </div>
 </div>
 
 <div class="stats shadow">
     <div class="stat">
-        <div class="stat-title">Soportes realizados en la semana</div>
-        <div class="stat-value">{{ semanales or 0 }}</div>
+        <div class="stat-title">Soportes atendidos</div>
+        <div class="stat-value">{{ atendidos or 0 }}</div>
     </div>
 </div>
 
 <div class="stats shadow">
     <div class="stat">
-        <div class="stat-title">Soportes realizados en el mes</div>
-        <div class="stat-value">{{ mensuales or 0 }}</div>
+        <div class="stat-title">Soportes en total</div>
+        <div class="stat-value">{{ total or 0 }}</div>
     </div>
 </div>

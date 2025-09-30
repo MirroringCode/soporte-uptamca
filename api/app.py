@@ -15,7 +15,7 @@ db.init_app(app)
 api = Api(app)
 CORS(app)
 
-from resources.Users import UsersResource, UserResource, PasswordResource
+from resources.Users import UsersResource, UserResource, PasswordResource, UserOptionResource
 from resources.Personal import PersonalResource, EmpleadoResource, PersonalOptionResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
@@ -25,6 +25,7 @@ from resources.Soportes import SoportesResource, SoporteResource, SoporteStatusR
 api.add_resource(UsersResource, '/api/users')
 api.add_resource(UserResource, '/api/users/<int:user_id>')
 api.add_resource(PasswordResource, '/api/users/reset_password/<int:user_id>')
+api.add_resource(UserOptionResource, '/api/users_options')
 
 api.add_resource(PersonalResource, '/api/personal')
 api.add_resource(PersonalOptionResource, '/api/personal_options')

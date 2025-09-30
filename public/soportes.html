@@ -6,8 +6,14 @@
     <title>Soportes</title>
     <link rel="stylesheet" href="../src/styles.css">
 </head>
-<body>
+<body hx-ext="response-targets">
 <div class="drawer lg:drawer-open">
+
+      <div data-notification class="toast toast-top z-5">
+
+      </div>
+
+
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col gap-7 min-h-screen">
         <!-- Page content here -->
@@ -79,8 +85,95 @@
     <div class="flex flex-col lg:flex-row items-center w-full gap-5 justify-around">
 
         <div>
-            <button class="btn btn-success">Crear nuevo soporte</button>
+            <button class="btn btn-success" onclick="crearSoporte.showModal()">Crear nuevo soporte</button>
         </div>
+
+          <dialog class="modal" id="crearSoporte">
+          <div class="toast toast-top" data-toast data-soporte-toast>
+          </div>
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Crear nueva soporte
+            </h1>
+ 
+
+            <div id="response" class="mb-4"></div>
+
+            
+            <form method="POST" class="w-100 my-0 mx-auto"
+            hx-post="/api/soportes" 
+            hx-target="div[data-soporte-toast]"
+            hx-disabled-elt="button[type='submit']"
+            hx-target-422="#response"
+            hx-target-5*="div[data-soporte-toast]"
+            hx-swap="innerHTML"
+            id="crearSoporteForm">
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Motivo</legend>
+                <input type="text" name="motivo" class="input w-100 my-0 mx-auto" placeholder="Motivo...">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Fecha del soporte</legend>
+                <input type="datetime-local" name="fecha" class="input w-100 my-0 mx-auto">
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Técnico que atendió el soporte</legend>
+                <select name="atendido_por" id class="select w-100"
+                hx-get="/api/users_options"
+                hx-trigger="click once, keydown[key=='Enter'] once"
+                hx-swap="beforeend"
+                hx-target="this">
+                  <option disabled selected value="">Seleccione al técnico</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Empleado solicitante</legend>
+                <select name="id_personal" id class="select w-100"
+                hx-get="/api/personal_options"
+                hx-trigger="click once, keydown[key=='Enter'] once"
+                hx-swap="beforeend"
+                hx-target="this">
+                  <option disabled selected value="">Seleccione el empleado</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">Departamento</legend>
+                <select name="id_departamento" class="select w-100"
+                hx-get="/api/departamentos"
+                hx-trigger="click once, keydown[key=='Enter'] once"
+                hx-target="this"
+                hx-swap="beforeend">
+                  <option disabled selected value="">Seleccione el departamento</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="fielset w-100 my-[1.5em]">
+                <legend class="fieldset-legend">¿Fue atendido el soporte?</legend>
+                <select name="atendido" class="select w-100">
+                  <option disabled selected value="">¿Fue atendido el soporte?</option>
+                  <option value="1">Si</option>
+                  <option value="0">No</option>
+                </select>
+              </fieldset>
+            </form>
+
+            <div class="modal-action">
+                <button type="submit" form="crearSoporteForm" class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
+        </dialog>
+
 
         <div class="dropdown dropdown-right">
         <div tabindex="0" role="button" class="btn m-1">
@@ -98,8 +191,9 @@
         <div class="overflow-x-auto overflow-y-auto max-h-120 mx-3">
             <table class="table" 
             hx-get="/api/soportes"
-            hx-trigger="load"
-            hx-indicator="#loadSoporte">
+            hx-trigger="load, soporteCreated from:dialog#crearSoporte, soporteDeleted from:body"
+            hx-indicator="#loadSoporte"
+            id="soportes-table">
             <span id="loadSoporte" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>
         </div>
@@ -112,5 +206,6 @@
     </div>
 </div>
 <script type="module" src="../src/main.js"></script>
+<script type="module" src="../src/soportes/main.js"></script>
 </body>
 </html>

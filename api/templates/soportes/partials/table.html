@@ -34,7 +34,22 @@
                 <button class="btn btn-xs btn-primary">
                     Editar
                 </button>
-                <button class="btn btn-xs my-[.75em] btn-error">
+                <button
+                data-eliminar
+                hx-delete="/api/soportes/{{ soporte.id }}"
+                hx-trigger="click"
+                hx-confirm="¿Está seguro de eliminar este soporte?"
+                hx-target="[data-notification]"
+                hx-target-4*="[data-notification]"
+                hx-on::after-request="
+                const toast = document.querySelector('[data-notification]');
+                htmx.trigger(document.body, 'soporteDeleted');
+
+                setTimeout(() => {
+                    toast.innerHTML = '';
+                }, 1500);
+                "
+                class="btn btn-xs my-[.75em] btn-error">
                     Eliminar
                 </button>
             </td>

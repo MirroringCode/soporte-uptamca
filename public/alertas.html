@@ -8,6 +8,11 @@
 </head>
 <body hx-ext="response-targets">
 <div class="drawer lg:drawer-open">
+
+  <div data-notification class="toast toast-top z-5">
+
+  </div>
+
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col gap-7 min-h-screen">
         <!-- Page content here -->
@@ -166,7 +171,7 @@
             <table class="table"
             id="alertas-table" 
             hx-get="/api/soporte_estatus?atendido=no&formato=table"
-            hx-trigger="load, alertaCreated from:dialog#crearAlerta"
+            hx-trigger="load, alertaCreated from:dialog#crearAlerta, soporteDeleted from:body"
             hx-indicator="#loadSoporte">
             <span id="loadSoporte" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>
