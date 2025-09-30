@@ -17,7 +17,10 @@
             <td>{{ user.username }}</td>
             <td>{{ user.rol.tipo }}</td>
             <td>
-                <button class="btn btn-xs btn-primary">
+                <button onclick="document.getElementById('editarUsuario').showModal()"
+                hx-get="/api/user_form/{{ user.id }}"
+                hx-target="#edit-form-container"
+                 class="btn btn-xs btn-primary">
                     Editar
                 </button>
                 <button
@@ -38,7 +41,10 @@
                 class="btn btn-xs my-[.75em] btn-error">
                     Eliminar
                 </button>
-                <button class="btn btn-xs my-[.75em] btn-warning">
+                <button onclick="reiniciarPassword.showModal()"
+                hx-get="/api/users/reset_password/{{ user.id }}"
+                hx-target="#password-form-container"
+                 class="btn btn-xs my-[.75em] btn-warning">
                     Reiniciar contraseña
                 </button>
             </td>

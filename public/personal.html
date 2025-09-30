@@ -107,22 +107,22 @@
               class="w-100 my-0 mx-auto">
                 <fieldset class="fielset w-100 my-[1.5em]">
                   <legend class="fieldset-legend">Cédula</legend>
-                  <input type="text" name="cedula" inputmode="numeric" class="input w-100 my-0 mx-auto" placeholder="12345678">
+                  <input type="number" name="cedula" required minlength="8" maxlength="10" class="input w-100 my-0 mx-auto" placeholder="12345678">
                 </fieldset>
 
                 <fieldset class="fielset w-100 my-[1.5em]">
                   <legend class="fieldset-legend">Nombre</legend>
-                  <input type="text" name="nombre" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
+                  <input type="text" name="nombre" required minlength="3" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
                 </fieldset>
 
                 <fieldset class="fielset w-100 my-[1.5em]">
                   <legend class="fieldset-legend">Apellido</legend>
-                  <input type="text" name="apellido" class="input w-100 my-0 mx-auto" placeholder="Apellido..">
+                  <input type="text" name="apellido" required minlength="3" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Apellido..">
                 </fieldset>
 
                 <fieldset class="fielset w-100 my-[1.5em]">
                   <legend class="fieldset-legend">Departamento al que pertenece el empleado</legend>
-                  <select name="id_departamento" class="select w-100"
+                  <select name="id_departamento" required class="select w-100"
                   hx-get="/api/departamentos"
                   hx-trigger="click once, keydown[key=='Enter'] once"
                   hx-target="this"

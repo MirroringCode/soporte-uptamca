@@ -27,7 +27,7 @@
                 {% endif %}
             </td>
             <td>{{ soporte.user.username or 'N/A' }}</td>
-            <td>{{ soporte.solicitante.nombre or 'N/A' }}</td>
+            <td>{{ (soporte.solicitante.nombre ~ ' ' ~ soporte.solicitante.apellido) if soporte.solicitante else 'N/A' }}</td>
             <td>{{ soporte.departamento.nombre or 'N/A' }}</td>
             <td>{{ soporte.fecha or 'N/A' }}</td>
             <td>

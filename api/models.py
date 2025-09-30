@@ -86,6 +86,7 @@ class Personal(db.Model):
     soportes_solicitados = db.relationship('Soporte', foreign_keys='Soporte.id_personal',
                                            backref='solicitante')
 
+
     # Jalar lista de personal
     def to_dict(self):
         return {
@@ -94,6 +95,7 @@ class Personal(db.Model):
             'nombre': self.nombre,
             'apellido': self.apellido,
             'departamento': self.departamento.nombre if self.departamento else None,
+            'nombre_completo': self.nombre_completo
         }
 
     def __repr__(self):

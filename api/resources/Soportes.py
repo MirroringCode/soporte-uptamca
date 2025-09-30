@@ -51,13 +51,14 @@ class SoportesResource(Resource):
             }, 500
 
     def post(self):
+        # PENDIENTE, hacer que atendido cuando sea 0 cuente como false  y validar atendido_por solo cuando está en el request 
         try:
             if request.headers.get('Content-Type') == 'application/json':
                 args = post_parser.parse_args()
             else:
                 args = {
                     'motivo': request.form.get('motivo'),
-                    'atendido': bool(request.form.get('atendido')),
+                    'atendido': request.form.get('atendido') == '1',
                     'atendido_por': request.form.get('atendido_por'),
                     'id_personal': request.form.get('id_personal'),
                     'id_departamento': request.form.get('id_departamento'),
@@ -81,6 +82,11 @@ class SoportesResource(Resource):
             except ValueError as e:
                 errores.append(str(e))
 
+            if args.get('atendido_por'):
+                try:
+                    validate_numeric(args['atendido_por'])
+                except ValueError as e:
+                    errores.append(str(e))
 
             try:
                 validate_required(args['id_personal'])
@@ -96,7 +102,6 @@ class SoportesResource(Resource):
 
             try:
                 validate_required(args['fecha'])
-                validate_date_format(args['fecha'], '%Y-%m-%d %H:%M:%S')
             except ValueError as e:
                 errores.append(str(e))
 

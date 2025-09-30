@@ -16,9 +16,9 @@ post_parser.add_argument('confirm_password', type=str, required=True)
 post_parser.add_argument('id_rol', type=int, required=True)
 
 put_parser = reqparse.RequestParser()
-put_parser.add_argument('username', type=str, required=False),
-put_parser.add_argument('password', type=str, required=False)
-put_parser.add_argument('id_rol', type=int, required=False),
+put_parser.add_argument('username', type=str, required=False, location=['json', 'form']),
+put_parser.add_argument('password', type=str, required=False, location=['json', 'form'])
+put_parser.add_argument('id_rol', type=int, required=False, location=['json', 'form']),
 
 password_parser = reqparse.RequestParser()
 password_parser.add_argument('new_password', type=str, required=True)
@@ -163,24 +163,37 @@ class UserResource(Resource):
         def put(self, user_id):
             """ Actualizar usuario existente """
             try:
-                args = put_parser.parse_args()
+                if request.headers.get('Content-Type') == 'application/json':
+                    args = put_parser.parse_args()
+                else:
+                    args = {
+                    'username': request.form.get('username'),
+                    'password': request.form.get('password'),
+                    'confirm_password': request.form.get('confirm_password'),
+                    'id_rol': request.form.get('id_rol')
+                }
                 usuario = User.query.get(user_id)
                 errores = []
                 if not usuario:
+                    if is_htmx_request():
+                        html = render_template('/components/alert.html',
+                                               success=False,
+                                               message='Usuario no encontrado',
+                                               alert_type='alert-error')
                     return {
                         'success': False,
                         'message': 'Usuario no encontrado'
                     }, 404
 
                 try:
-                    validate_required(args['username'])
-                    validate_length(args['username'], 2, 100)
+                    validate_required(args['username'], 'Debe ingresar un nombre de usuario')
+                    validate_length(args['username'], 'El nombre de usuario debe tener entre 2 y 100 caracteres', 2, 100)
                 except ValueError as e:
                     errores.append(str(e))
                 
                 try:
-                    validate_required(args['id_rol'])
-                    validate_numeric(args['id_rol'])
+                    validate_required(args['id_rol'], 'Debe ingresar un rol')
+                    validate_numeric(args['id_rol'], 'Rol debe ser numerico')
                 except ValueError as e:
                     errores.append(str(e))
 
@@ -195,6 +208,21 @@ class UserResource(Resource):
                    
 
                 if errores:
+                    if is_htmx_request():
+                        errors_html = """
+                            <div class="container">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <h3 class="font-bold">Errores de validación:</h3>
+                                    <ul class="list-disc pl-5">
+                                        {}
+                                    </ul>
+                                </div>
+                            </div>                    
+                        """.format("".join(f"<li>{ error }</li>" for error in errores))
+                        return make_response(errors_html, 422)
                     return {
                         'success': False,
                         'errors': errores,
@@ -207,6 +235,13 @@ class UserResource(Resource):
 
                 db.session.commit()
 
+                if is_htmx_request():
+                    html = render_template('components/alert.html',
+                                           success=True,
+                                           message='Informacion de usuario actualizada exitosamente',
+                                           alert_type='alert-success')
+                    return make_response(html, 200)
+
                 return {
                     'success': True,
                     'message': 'Información de usuario actualizado exitosamente',
@@ -215,6 +250,11 @@ class UserResource(Resource):
 
             except Exception as e:
                 db.session.rollback()
+                if is_htmx_request():
+                    html = render_template('/components/alert.html',
+                                           success=False,
+                                           message=str(e),
+                                           alert_type='alert-error')
                 return {
                     'success': False,
                     'error': str(e),
@@ -275,10 +315,24 @@ class UserResource(Resource):
 
 
 class PasswordResource(Resource):
+
+    def get(self, user_id):
+        user = User.query.get_or_404(user_id)
+        if is_htmx_request():
+            html = render_template('users/partials/form_reiniciar_contraseña.html',
+                                   user=user)
+            return make_response(html, 200)
+
     def put(self, user_id):
         """ Reiniciar contraseña con confirmación """
         try:
-            args = password_parser.parse_args()
+            if request.headers.get('Content-Type') == 'application/json':
+                args = password_parser.parse_args()
+            else:
+                args = {
+                    'new_password': request.form.get('new_password'),
+                    'confirm_new_password': request.form.get('confirm_new_password')
+                }
             errores = []
             usuario = User.query.get(user_id)
             if not usuario:
@@ -302,21 +356,49 @@ class PasswordResource(Resource):
                 errores.append('Las contraseñas no coinciden')
             
             if errores:
+                if is_htmx_request():
+                    errors_html = """
+                            <div class="container">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <h3 class="font-bold">Errores de validación:</h3>
+                                    <ul class="list-disc pl-5">
+                                        {}
+                                    </ul>
+                                </div>
+                            </div>                    
+                        """.format("".join(f"<li>{ error }</li>" for error in errores))
+                    return make_response(errors_html, 422)
+
                 return {
                     'success': False,
                     'errors': errores,
                     'message': 'Ha habido un problema reiniciando la clave'
-                }, 400
+                }, 422
             
             usuario.password = args['new_password']
             db.session.commit()
 
+            if is_htmx_request():
+                html = render_template('components/alert.html',
+                                       success=True,
+                                       message='Contraseña reiniciada exitosamente',
+                                       alert_type='alert-success')
+                return make_response(html, 200)
             return {
                 'success': True,
                 'message': 'Contraseña reiniciada exitosamente'
             }, 200
         except Exception as e:
             db.session.rollback()
+            if is_htmx_request():
+                html = render_template('components/alert.html',
+                                       success=False,
+                                       message=str(e),
+                                       alert_type='alert-error')
+                return make_response(html, 500)
             return {
                 'success': True,
                 'error': str(e),
@@ -330,3 +412,12 @@ class UserOptionResource(Resource):
         if is_htmx_request():
             html = render_template('users/partials/users_options.html', users=users)
             return make_response(html, 200)             
+
+class UserFormResource(Resource):
+    def get(self, user_id):
+        user = User.query.get_or_404(user_id)
+        roles = Rol.query.all()
+        if is_htmx_request():
+            html = render_template('users/partials/form_editar_usuario.html', user=user, roles=roles)
+            return make_response(html, 200)
+        return user.to_dict()

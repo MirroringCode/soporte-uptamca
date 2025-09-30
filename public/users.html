@@ -98,35 +98,35 @@
             </h1>
  
 
-            <div id="response" class="mb-4"></div>
+            <div data-response class="mb-4"></div>
 
             
             <form method="POST" class="w-100 my-0 mx-auto" 
             hx-post="/api/users"
             hx-target="div[data-user-toast]"
             hx-disabled-elt="button[type='submit']"
-            hx-target-422="#response"
+            hx-target-422="#crearUsuario [data-response]"
             hx-target-500="div[data-user-toast]"
             hx-swap="innerHTML"
             id="crearUsuarioForm">
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Nombre de usuario</legend>
-                <input type="text" name="username" class="input w-100 my-0 mx-auto" placeholder="Usuario...">
+                <input type="text" name="username" required minlength="3" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Usuario...">
               </fieldset>
 
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Contraseña</legend>
-                <input type="password" name="password" class="input w-100 my-0 mx-auto" placeholder="Contraseña...">
+                <input type="password" name="password" required minlength="6" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Contraseña...">
               </fieldset>
 
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Confirme Contraseña</legend>
-                <input type="password" name="confirm_password" class="input w-100 my-0 mx-auto" placeholder="Confirme contraseña...">
+                <input type="password" name="confirm_password" required minlength="3" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Confirme contraseña...">
               </fieldset>
 
               <fieldset class="fielset w-100 my-[1.5em]">
                 <legend class="fieldset-legend">Rol del usuario</legend>
-                <select name="id_rol" id class="select w-100"
+                <select name="id_rol" required id class="select w-100"
                 hx-get="/api/roles"
                 hx-trigger="click once, keydown[key=='Enter'] once"
                 hx-swap="beforeend"
@@ -148,6 +148,62 @@
             <button></button>
           </form>
 
+        </dialog>
+
+        <dialog class="modal" id="editarUsuario">
+          <div class="toast toast-top" data-toast data-user-toast>
+          </div>
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Modificar datos de usuario
+            </h1>
+ 
+            <div data-response="" class="mb-4"></div>
+
+
+            <div id="edit-form-container">
+
+            </div>
+            
+            <div class="modal-action">
+                <button type="submit" form="editarUsuarioForm" class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
+        </dialog>
+
+        <dialog class="modal" id="reiniciarPassword">
+          <div class="toast toast-top" data-toast data-user-toast>
+          </div>
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Reiniciar contraseña de usuario
+            </h1>
+ 
+            <div data-response="" class="mb-4"></div>
+
+
+            <div id="password-form-container">
+
+            </div>
+            
+            <div class="modal-action">
+                <button type="submit" form="reiniciarPasswordForm" class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
         </dialog>
 
 <!--         <div class="dropdown dropdown-right">
@@ -176,7 +232,7 @@
             <table class="table"
             id="users-table"
             hx-get="/api/users"
-            hx-trigger="load, userCreated from:#crearUsuario, userDeleted from:body"
+            hx-trigger="load, userCreated from:#crearUsuario, userDeleted from:body, userUpdated from:#editarUsuario"
             hx-indicator="#loadUser">
             <span id="loadUser" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>

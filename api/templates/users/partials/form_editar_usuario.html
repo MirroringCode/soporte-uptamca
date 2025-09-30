@@ -1,0 +1,44 @@
+<form method="POST" class="w-100 my-0 mx-auto" 
+hx-put="/api/users/{{ user.id }}"
+hx-target="#editarUsuario div[data-user-toast]"
+hx-disabled-elt="button[type='submit']"
+hx-target-422="#editarUsuario [data-response]"
+hx-target-404="#editarUsuario div[data-user-toast]"
+hx-target-500="#editarUsuario div[data-user-toast]"
+hx-swap="innerHTML"
+hx-on::after-request="
+const modal = document.querySelector('dialog#editarUsuario');
+const errorContainer = modal.querySelector('[data-response]');
+const toastContainer = modal.querySelector('[data-user-toast]');
+const request = event.detail.xhr;
+
+if (request.status === 200) {
+    errorContainer.innerHTML = '';
+    
+    htmx.trigger(modal, 'userUpdated');
+
+    setTimeout(() => {
+        toastContainer.innerHTML = ''; // Limpiar el toast
+        modal.close();
+    }, 1000);
+
+} else if(request.status === 422) {
+    toastContainer.innerHTML = '';
+}
+"
+id="editarUsuarioForm">
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Nombre de usuario</legend>
+    <input type="text" name="username" value="{{ user.username }}" required minlength="3" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Usuario...">
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Rol del usuario</legend>
+    <select name="id_rol" required id class="select w-100">
+        <option disabled selected value="">Seleccione el rol</option>
+        {% for rol in roles %}
+        <option value="{{ rol.id }}" {% if rol.id == user.id_rol %}selected{% endif %}>{{ rol.tipo }}</option>
+        {% endfor %}
+    </select>
+    </fieldset>
+</form>

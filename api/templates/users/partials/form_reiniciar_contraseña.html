@@ -1,0 +1,36 @@
+<form method="POST" class="w-100 my-0 mx-auto" 
+hx-put="/api/users/reset_password/{{ user.id }}"
+hx-target="#reiniciarPassword div[data-user-toast]"
+hx-disabled-elt="button[type='submit']"
+hx-target-422="#reiniciarPassword [data-response]"
+hx-target-500="#reiniciarPassword div[data-user-toast]"
+hx-swap="innerHTML"
+hx-on::after-request="
+const modal = document.querySelector('dialog#reiniciarPassword');
+const errorContainer = modal.querySelector('[data-response]');
+const toastContainer = modal.querySelector('[data-user-toast]');
+const request = event.detail.xhr;
+
+if (request.status === 200) {
+    errorContainer.innerHTML = '';
+    
+    setTimeout(() => {
+        toastContainer.innerHTML = ''; // Limpiar el toast
+        modal.close();
+    }, 1000);
+
+} else if(request.status === 422) {
+    toastContainer.innerHTML = '';
+}
+"
+id="reiniciarPasswordForm">
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Contraseña</legend>
+    <input type="password" name="new_password" required minlength="6" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Contraseña...">
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Confirme Contraseña</legend>
+    <input type="password" name="confirm_new_password" required minlength="3" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Confirme contraseña...">
+    </fieldset>
+</form>

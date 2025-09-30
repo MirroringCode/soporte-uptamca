@@ -73,19 +73,19 @@ class PersonalResource(Resource):
             try:
                 validate_required(args['cedula'])
                 validate_numeric(args['cedula'])
-                validate_length(args['cedula'], 8, 10)
+                validate_length(args['cedula'], 'La cedula debe tener entre 8 y 10 caracteres', 8, 10)
             except ValueError as e:
                 errores.append(str(e))
 
             try:
                 validate_required(args['nombre'])
-                validate_length(args['nombre'], 4, 100)
+                validate_length(args['nombre'], 'El nombre debe tener entre 4 y 100 caracteres', 4, 100)
             except ValueError as e:
                 errores.append(str(e))
 
             try:
                 validate_required(args['apellido'])
-                validate_length(args['apellido'], 4, 100)
+                validate_length(args['apellido'], 'El apellido debe tener entre 4 y 100 caracteres', 4, 100)
             except ValueError as e:
                 errores.append(str(e))
 
