@@ -4,6 +4,12 @@ from sqlalchemy import desc, func
 from datetime import datetime, timedelta
 from models import Soporte, Personal, User, Departamento
 from db import db
+from common.validator import (
+    validate_required,
+    validate_length,
+    validate_numeric,
+    validate_date_format
+)
 from common.check_htmx_request import is_htmx_request
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
@@ -27,7 +33,7 @@ class SoportesResource(Resource):
         try:
             soportes = Soporte.query.all()
 
-            if 'text/html' in request.headers.get('Accept', '') or request.headers.get('HX-Request') == 'true':
+            if is_htmx_request():
                 html = render_template('soportes/partials/table.html', soportes=soportes)
                 return make_response(html, 200)
 
@@ -68,6 +74,31 @@ class SoportesResource(Resource):
                 errores.append('No se ha encontrado a este técnico')
             if not departamento and departamento != None:
                 errores.append('No se ha encontrado el departamento')
+
+            try:
+                validate_required(args['motivo'])
+                validate_length(args['motivo'], 'el motivo debe contener entre 3 y 100 caracteres', min_length=3, max_length=100)
+            except ValueError as e:
+                errores.append(str(e))
+
+
+            try:
+                validate_required(args['id_personal'])
+                validate_numeric(args['id_personal'])
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['id_departamento'])
+                validate_numeric(args['id_departamento'])
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['fecha'])
+                validate_date_format(args['fecha'], '%Y-%m-%d %H:%M:%S')
+            except ValueError as e:
+                errores.append(str(e))
 
             if errores:
                 if is_htmx_request():
