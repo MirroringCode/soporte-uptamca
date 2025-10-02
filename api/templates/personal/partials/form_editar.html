@@ -1,0 +1,52 @@
+<form id="editarEmpleadoForm"
+hx-put="/api/personal/{{ empleado.id }}"
+hx-target="#editarEmpleado div[data-empleado-toast]"
+hx-target-422="#editarEmpleado [data-response]"
+hx-target-500="#editarEmpleado div[data-empleado-toast]"
+hx-swap="innerHTML"
+hx-on::after-request="
+const modal = document.querySelector('dialog#editarEmpleado');
+const errorContainer = modal.querySelector('[data-response]');
+const toastContainer = modal.querySelector('[data-empleado-toast]');
+const request = event.detail.xhr;
+
+if (request.status === 200) {
+    errorContainer.innerHTML = '';
+
+    htmx.trigger(modal, 'empleadoUpdated')
+
+    setTimeout(() => {
+        toastContainer.innerHTML = '';
+        modal.close()
+    }, 1000);
+} else if (request.status === 422) {
+    toastContainer.innerHTML = '';
+}
+
+"
+class="w-100 my-0 mx-auto">
+<fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Cédula</legend>
+    <input type="number" name="cedula" value="{{ empleado.cedula }}" required minlength="8" maxlength="10" class="input w-100 my-0 mx-auto" placeholder="12345678">
+</fieldset>
+
+<fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Nombre</legend>
+    <input type="text" name="nombre" required minlength="3" value="{{ empleado.nombre }}" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
+</fieldset>
+
+<fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Apellido</legend>
+    <input type="text" name="apellido" required minlength="3" value="{{ empleado.apellido }}" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Apellido...">
+</fieldset>
+
+<fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Departamento al que pertenece el empleado</legend>
+    <select name="id_departamento" required class="select w-100">
+        <option disabled selected value="">Seleccione el departamento</option>
+        {% for departamento in departamentos %}
+        <option value="{{ departamento.id }}" {% if departamento.id == empleado.id_departamento %}selected{% endif %}>{{ departamento.nombre }}</option>
+        {% endfor %}
+    </select>
+</fieldset>
+</form>

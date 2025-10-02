@@ -97,12 +97,12 @@
                 Registrar nuevo empleado
               </h1>
 
-              <div id="response" class="mb-4"></div>
+              <div data-response class="mb-4"></div>
               
               <form method="POST" id="crearEmpleadoForm" 
               hx-post="/api/personal"
               hx-target="div[data-empleado-toast]"
-              hx-target-422="#response"
+              hx-target-422="[data-response]"
               hx-target-500="div[data-empleado-toast]"
               class="w-100 my-0 mx-auto">
                 <fieldset class="fielset w-100 my-[1.5em]">
@@ -143,7 +143,33 @@
             <form action="" method="dialog" class="modal-backdrop">
               <button></button>
             </form>
+        </dialog>
 
+        <dialog class="modal" id="editarEmpleado">
+
+            <div class="toast toast-top" data-toast data-empleado-toast></div>          
+            <div class="modal-box">
+              <h1 class="text-3xl font-bold text-center">
+                Modificar información del empleado
+              </h1>
+
+              <div data-response class="mb-4"></div>
+              
+              <div id="edit-form-container">
+
+              </div>
+
+              <div class="modal-action">
+                  <button type="submit" form="editarEmpleadoForm" class="btn btn-success">Aceptar</button>
+                  <form method="dialog">
+                    <button class="btn">Cerrar</button>
+                  </form>
+
+              </div>
+            </div>
+            <form action="" method="dialog" class="modal-backdrop">
+              <button></button>
+            </form>
         </dialog>
 
         <div class="dropdown dropdown-right">
@@ -168,7 +194,7 @@
 
             <table class="table" 
             hx-get="/api/personal"
-            hx-trigger="load, empleadoCreated from:#crearEmpleado, empleadoDeleted from:body"
+            hx-trigger="load, empleadoCreated from:#crearEmpleado, empleadoDeleted from:body, empleadoUpdated from:#editarEmpleado"
             hx-indicator="#loadPersonal"
             id="table-personal">
             <span id="loadPersonal" class="loading loading-spinner loading-xl htmx-indicator"></span>

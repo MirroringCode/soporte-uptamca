@@ -32,7 +32,6 @@ class SoportesResource(Resource):
     def get(self):
         try:
             soportes = Soporte.query.all()
-
             if is_htmx_request():
                 html = render_template('soportes/partials/table.html', soportes=soportes)
                 return make_response(html, 200)
@@ -288,6 +287,7 @@ class SoporteStatusResource(Resource):
         try:
             atendido_param = request.args.get('atendido')
             formato_param = request.args.get('formato')
+            alerta_param = request.args.get('es_alerta')
             query = Soporte.query
 
             if atendido_param == 'si':
@@ -297,12 +297,17 @@ class SoporteStatusResource(Resource):
             
             soportes = query.all()
 
-            if 'text/html' in request.headers.get('Accepts', '') or request.headers.get('HX-Request') == 'true':
+            if is_htmx_request():
                 html = None
                 if formato_param == 'card':
                     html = render_template('soportes/partials/soporte-reciente-card.html', soportes=soportes)
                 if formato_param == 'table' or formato_param == None:
-                    html = render_template('soportes/partials/table.html', soportes=soportes)
+                    if alerta_param == 'si':
+                        html = render_template('soportes/partials/table.html', 
+                                               soportes=soportes,
+                                               es_alerta=True)
+                    else:
+                        html = render_template('soportes/partials/table.html', soportes=soportes)
                 return make_response(html, 200)
 
             return {
@@ -360,4 +365,26 @@ class SoportesCountResource(Resource):
                 'message': 'No se ha podido obtener el conteo'
             }
 
+class SoporteEditarFormResource(Resource):
+    def get(self, soporte_id):
+        soporte = Soporte.query.get_or_404(soporte_id)
+        departamentos = Departamento.query.all()
+        empleados = Personal.query.all()
+        users = User.query.all()
 
+        tipo_editar_param = request.args.get('tipo_editar')
+
+        if tipo_editar_param == 'alerta':
+            html = render_template('soportes/partials/form_editar_alerta.html',
+                                   soporte=soporte,
+                                   empleados=empleados,
+                                   departamentos=departamentos,
+                                   users=users)
+            return make_response(html, 200)
+        elif tipo_editar_param == 'soporte':
+            html = render_template('soportes/partials/form_editar_soporte.html',
+                                   soporte=soporte,
+                                   empelados=empleados,
+                                   departamentos=departamentos,
+                                   users=users)
+            return make_response(html, 200)

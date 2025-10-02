@@ -159,10 +159,25 @@ class PersonalResource(Resource):
 class EmpleadoResource(Resource):
     def put(self, personal_id):
         try:
-            args = put_parser.parse_args()
+            if request.headers.get('Content-Type') == 'application/json': 
+                args = put_parser.parse_args()
+            else:
+                args = {
+                    'cedula': request.form.get('cedula'),
+                    'nombre': request.form.get('nombre'),
+                    'apellido': request.form.get('apellido'),
+                    'id_departamento': request.form.get('id_departamento')
+                }
+
             empleado = Personal.query.get(personal_id)
             errores = []
             if not empleado:
+                if is_htmx_request():
+                    html = render_template('/components/alert.html',
+                                           success=False,
+                                           message='Empleado no encontrado',
+                                           alert_type='alert-error')
+                    return make_response(html, 404)
                 return {
                     'success': False,
                     'message': 'Empleado no encontrado'
@@ -176,33 +191,47 @@ class EmpleadoResource(Resource):
             departamento = Departamento.query.get(args['id_departamento'])
             if not departamento:
                 errores.append('El departamento especificado no existe') 
-
             try:
-                validate_required(args['cedula'])
-                validate_numeric(args['cedula'])
-                validate_length(args['cedula'], 8, 10)
+                validate_required(args['cedula'], 'Debe ingresar la cédula')
+                validate_numeric(args['cedula'], 'Solo puede ingresar caracteres numericos en la cédula')
+                validate_length(args['cedula'], 'La cédula debe tener entre 8 y 10 caracteres', 8, 10)
             except ValueError as e:
                 errores.append(str(e))
 
             try:
-                validate_required(args['nombre'])
-                validate_length(args['nombre'], 4, 100)
+                validate_required(args['nombre'], 'Debe indicar el nombre del empleado')
+                validate_length(args['nombre'], 'El nombre del empleado debe tener entre 4 y 100 caracteres', 4, 100)
             except ValueError as e:
                 errores.append(str(e))
 
             try:
-                validate_required(args['apellido'])
-                validate_length(args['apellido'], 4, 100)
+                validate_required(args['apellido'], 'Debe indicar el apellido del empleado')
+                validate_length(args['apellido'], 'El apellido del empleado debe tener entre 4 y 100 caracteres', 4, 100)
             except ValueError as e:
                 errores.append(str(e))
 
             try:
-                validate_required(args['id_departamento'])
-                validate_numeric(args['id_departamento'])
+                validate_required(args['id_departamento'], 'Debe indicar a que departamento pertenece el empleado')
+                validate_numeric(args['id_departamento'], 'La id del departamento no es un número')
             except ValueError as e:
                 errores.append(str(e))
 
             if errores:
+                if is_htmx_request():
+                    errors_html = """
+                            <div class="container">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <h3 class="font-bold">Errores de validación:</h3>
+                                    <ul class="list-disc pl-5">
+                                        {}
+                                    </ul>
+                                </div>
+                            </div>                    
+                        """.format("".join(f"<li>{ error }</li>" for error in errores))
+                    return make_response(errors_html, 422)
                 return {
                     'success': False,
                     'errors': errores,
@@ -217,6 +246,12 @@ class EmpleadoResource(Resource):
                 empleado.id_departamento = args['id_departamento']
             
             db.session.commit()
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=True,
+                                       message='Empleado modificado exitosamente',
+                                       alert_type='alert-success')
+                return make_response(html, 200)
             return {
                 'success': True,
                 'message': f'Información de empleado actualizada exitosamente',
@@ -225,6 +260,12 @@ class EmpleadoResource(Resource):
         
         except Exception as e:
             db.session.rollback()
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=True,
+                                       message=str(e),
+                                       alert_type='alert-error')
+                return make_response(html, 500)
             return {
                 'success': False,
                 'error': str(e),
@@ -288,3 +329,14 @@ class PersonalOptionResource(Resource):
         if is_htmx_request():
             html = render_template('personal/partials/empleados_options.html', personal=personal)
             return make_response(html, 200)             
+
+
+class FormEditarResource(Resource):
+    def get(self, personal_id):
+        empleado = Personal.query.get_or_404(personal_id)
+        departamentos = Departamento.query.all()
+        if is_htmx_request():
+            html = render_template('/personal/partials/form_editar.html',
+                                   empleado=empleado,
+                                   departamentos=departamentos)
+            return make_response(html, 200)

@@ -1,0 +1,40 @@
+<form method="POST" class="w-100 my-0 mx-auto"
+hx-post="/api/soportes" 
+hx-target="div[data-alerta-toast]"
+hx-disabled-elt="button[type='submit']"
+hx-target-422="#response"
+hx-target-5*="div[data-alerta-toast]"
+hx-swap="innerHTML"
+id="crearAlertaForm">
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Motivo</legend>
+    <input type="text" required minlength="3" maxlength="100" name="motivo" class="input w-100 my-0 mx-auto" placeholder="Motivo...">
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Fecha del soporte</legend>
+    <input type="datetime-local" required name="fecha" class="input w-100 my-0 mx-auto">
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Empleado solicitante</legend>
+    <select name="id_personal" required id class="select w-100"
+    hx-get="/api/personal_options"
+    hx-trigger="click once, keydown[key=='Enter'] once"
+    hx-swap="beforeend"
+    hx-target="this">
+        <option disabled selected value="">Seleccione el empleado</option>
+    </select>
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Departamento</legend>
+    <select name="id_departamento" required class="select w-100"
+    hx-get="/api/departamentos"
+    hx-trigger="click once, keydown[key=='Enter'] once"
+    hx-target="this"
+    hx-swap="beforeend">
+        <option disabled selected value="">Seleccione el departamento</option>
+    </select>
+    </fieldset>
+</form>

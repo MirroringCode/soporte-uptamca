@@ -19,7 +19,11 @@
             <td>{{ empleado.nombre }} {{ empleado.apellido }}</td>
             <td>{{ empleado.departamento.nombre or 'N/A'}}</td>
             <td> 
-                <button class="btn btn-xs btn-primary">
+                <button onclick="editarEmpleado.showModal()"
+                hx-trigger="click"
+                hx-get="/api/personal_form/{{ empleado.id }}"
+                hx-target="#edit-form-container"
+                class="btn btn-xs btn-primary">
                     Editar
                 </button>
                 <button class="btn btn-xs my-[.75em] btn-error"

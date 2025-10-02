@@ -1,0 +1,57 @@
+<form method="POST" class="w-100 my-0 mx-auto"
+hx-put="/api/soportes/{{ soporte.id }}" 
+hx-target="#editarAlertadiv[data-alerta-toast]"
+hx-disabled-elt="button[type='submit']"
+hx-target-422="#editarAlerta [data-response]"
+hx-target-5*="#editarAlerta div[data-alerta-toast]"
+hx-swap="innerHTML"
+id="editararAlertaForm">
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Motivo</legend>
+    <input type="text" required minlength="3" maxlength="100" value="{{ soporte.motivo }}" name="motivo" class="input w-100 my-0 mx-auto" placeholder="Motivo...">
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Fecha del soporte</legend>
+    <input type="datetime-local" required name="fecha" value="{{ soporte.fecha }}" class="input w-100 my-0 mx-auto">
+    </fieldset>
+    
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Técnico que atiende el soporte</legend>
+    <select name="atendido_por" required id class="select w-100">
+        <option disabled selected value="">Seleccione el técnico</option>
+        {% for user in users %}
+        <option value="{{ user.id }}">{{ user.username }}</option>
+        {% endfor %}
+    </select>
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Empleado solicitante</legend>
+    <select name="id_personal" required id class="select w-100">
+        <option disabled selected value="">Seleccione el empleado</option>
+        {% for empleado in empleados %}
+        <option value="{{ empleado.id }}" {% if empleado.id == soporte.id_personal %} selected {% endif %}>{{ empleado.nombre ~ ' ' ~ empleado.apellido }}</option>
+        {% endfor %}
+    </select>
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">Departamento</legend>
+    <select name="id_departamento" required class="select w-100">
+        <option disabled selected value="">Seleccione el departamento</option>
+        {% for departamento in departamentos %}
+        <option value="{{ departamento.id }}" {% if departamento.id == soporte.id_departamento %} selected {% endif %} >{{ departamento.nombre }}</option>
+        {% endfor %}
+    </select>
+    </fieldset>
+
+    <fieldset class="fielset w-100 my-[1.5em]">
+    <legend class="fieldset-legend">¿El soporte fue atendido?</legend>
+    <select name="id_departamento" required class="select w-100">
+        <option disabled selected value="">¿El soporte fue atendido?</option>
+        <option value="si">Si</option>
+        <option value="no">No</option>
+    </select>
+    </fieldset>
+</form>

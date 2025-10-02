@@ -19,6 +19,7 @@
             <td>
                 <button onclick="document.getElementById('editarUsuario').showModal()"
                 hx-get="/api/user_form/{{ user.id }}"
+                hx-trigger="click"
                 hx-target="#edit-form-container"
                  class="btn btn-xs btn-primary">
                     Editar
@@ -43,6 +44,7 @@
                 </button>
                 <button onclick="reiniciarPassword.showModal()"
                 hx-get="/api/users/reset_password/{{ user.id }}"
+                hx-trigger="click"
                 hx-target="#password-form-container"
                  class="btn btn-xs my-[.75em] btn-warning">
                     Reiniciar contraseña

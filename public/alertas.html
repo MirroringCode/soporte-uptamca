@@ -151,6 +151,34 @@
           <form action="" method="dialog" class="modal-backdrop">
             <button></button>
           </form>
+
+
+        </dialog>
+
+
+        <dialog class="modal" id="editarAlerta">
+          <div class="toast toast-top" data-toast data-alerta-toast>
+          </div>
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Editar alerta
+            </h1>
+
+            <div id="editar-alerta-container"></div>
+
+            <div data-response class="mb-4"></div>         
+
+            <div class="modal-action">
+                <button type="submit" form="editarAlertaForm" class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
         </dialog>
 
 
@@ -170,7 +198,7 @@
         <div class="overflow-x-auto overflow-y-auto max-h-120 mx-3">
             <table class="table"
             id="alertas-table" 
-            hx-get="/api/soporte_estatus?atendido=no&formato=table"
+            hx-get="/api/soporte_estatus?atendido=no&formato=table&es_alerta=si"
             hx-trigger="load, alertaCreated from:dialog#crearAlerta, soporteDeleted from:body"
             hx-indicator="#loadSoporte">
             <span id="loadSoporte" class="loading loading-spinner loading-xl htmx-indicator"></span>

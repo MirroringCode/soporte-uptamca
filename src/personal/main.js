@@ -5,14 +5,13 @@ const elements = {
     forms: {
         crear: document.getElementById('crearEmpleadoForm')
     },
-    errorContainer: document.querySelector('#response'),
     table: document.querySelector('#table-personal')
 }
 
 
 elements.forms.crear.addEventListener('htmx:afterRequest', (e) => {
     const modal = document.querySelector('dialog#crearEmpleado');
-    const errorContainer = modal.querySelector('#response');
+    const errorContainer = modal.querySelector('[data-response]');
     const toastContainer = modal.querySelector('[data-empleado-toast]');
     const request = e.detail.xhr;
 

@@ -31,9 +31,23 @@
             <td>{{ soporte.departamento.nombre or 'N/A' }}</td>
             <td>{{ soporte.fecha or 'N/A' }}</td>
             <td>
-                <button class="btn btn-xs btn-primary">
+                {% if es_alerta %}
+                <button onclick="editarAlerta.showModal()"
+                hx-get="/api/soportes_form/{{ soporte.id }}?tipo_editar=alerta"
+                hx-trigger="click"
+                hx-target="#editar-alerta-container"
+                class="btn btn-xs btn-primary">
                     Editar
                 </button>
+                {% else %}
+                <button onclick="editarAlerta.showModal()"
+                hx-get="/api/soportes_form/{{ soporte.id }}?tipo_editar=soporte"
+                hx-trigger="click"
+                hx-target="#editar-alerta-container"
+                class="btn btn-xs btn-primary">
+                    Editar
+                </button>
+                {% endif %}
                 <button
                 data-eliminar
                 hx-delete="/api/soportes/{{ soporte.id }}"

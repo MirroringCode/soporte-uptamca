@@ -1,9 +1,10 @@
 {% for soporte in soportes %}
 <li>
-    <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-sm">
+    <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-lg">
     <div class="card-body">
         <h2 class="card-title">{{ soporte.motivo }}</h2>
         <p>{{ soporte.departamento.nombre }} - {{ soporte.solicitante.nombre + ' ' + soporte.solicitante.apellido }}</p>
+        <legend class="font-bold">{{ soporte.fecha.strftime('%d-%m-%Y %H:%I %p') }}</legend>
         <div class="justify-end card-actions">
         {% if not soporte.atendido %}
         <button class="btn btn-success">Marcar como atendido</button>
