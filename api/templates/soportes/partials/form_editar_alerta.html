@@ -1,11 +1,31 @@
 <form method="POST" class="w-100 my-0 mx-auto"
 hx-put="/api/soportes/{{ soporte.id }}" 
-hx-target="#editarAlertadiv[data-alerta-toast]"
+hx-target="#editarAlerta div[data-alerta-toast]"
 hx-disabled-elt="button[type='submit']"
 hx-target-422="#editarAlerta [data-response]"
 hx-target-5*="#editarAlerta div[data-alerta-toast]"
 hx-swap="innerHTML"
-id="editararAlertaForm">
+hx-on::after-request="
+const modal = document.querySelector('#editarAlerta');
+const errorContainer = modal.querySelector('[data-response]');
+const toastContainer = modal.querySelector('[data-alerta-toast]');
+const request = event.detail.xhr;
+
+if (request.status === 200) {
+    errorContainer.innerHTML = '';
+
+    htmx.trigger(modal, 'alertaUpdated');
+
+    setTimeout(() => {
+        toastContainer.innerHTML = '';
+        modal.close();
+    }, 1000);
+} else if (request.status === 422) {
+    toastContainer.innerHTML = '';
+}
+
+"
+id="editarAlertaForm">
     <fieldset class="fielset w-100 my-[1.5em]">
     <legend class="fieldset-legend">Motivo</legend>
     <input type="text" required minlength="3" maxlength="100" value="{{ soporte.motivo }}" name="motivo" class="input w-100 my-0 mx-auto" placeholder="Motivo...">
@@ -21,7 +41,7 @@ id="editararAlertaForm">
     <select name="atendido_por" required id class="select w-100">
         <option disabled selected value="">Seleccione el técnico</option>
         {% for user in users %}
-        <option value="{{ user.id }}">{{ user.username }}</option>
+        <option value="{{ user.id }}" {% if user.id == soporte.atendido_por %}selected{% endif %}>{{ user.username }}</option>
         {% endfor %}
     </select>
     </fieldset>
@@ -48,10 +68,10 @@ id="editararAlertaForm">
 
     <fieldset class="fielset w-100 my-[1.5em]">
     <legend class="fieldset-legend">¿El soporte fue atendido?</legend>
-    <select name="id_departamento" required class="select w-100">
+    <select name="atendido" required class="select w-100">
         <option disabled selected value="">¿El soporte fue atendido?</option>
-        <option value="si">Si</option>
-        <option value="no">No</option>
+        <option value="1">Si</option>
+        <option value="0">No</option>
     </select>
     </fieldset>
 </form>

@@ -1,6 +1,5 @@
 <thead>
     <tr>
-        <th><label><input type="checkbox" class="checkbox"></label></th>
         <th>Usuario</th>
         <th>Rol</th>
         <th>Acciones</th>
@@ -9,11 +8,6 @@
 <tbody>
     {% for user in users %}
         <tr id="user-{{ user.id }}">
-            <td>
-                <label for="">
-                    <input type="checkbox" class="checkbox" name="" id="">
-                </label>
-            </td>
             <td>{{ user.username }}</td>
             <td>{{ user.rol.tipo }}</td>
             <td>

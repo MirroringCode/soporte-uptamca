@@ -1,6 +1,5 @@
 <thead>
     <tr>
-        <th><label><input type="checkbox" class="checkbox"></label></th>
         <th>Motivo</th>
         <th>Atendido</th>
         <th>Técnico</th>
@@ -13,11 +12,6 @@
 <tbody>
     {% for soporte in soportes %}
         <tr id="soporte-{{ soporte.id }}">
-            <td>
-                <label for="">
-                    <input type="checkbox" class="checkbox" name="" id="">
-                </label>
-            </td>
             <td>{{ soporte.motivo }}</td>
             <td>
                 {% if soporte.atendido %}
@@ -40,10 +34,10 @@
                     Editar
                 </button>
                 {% else %}
-                <button onclick="editarAlerta.showModal()"
+                <button onclick="editarSoporte.showModal()"
                 hx-get="/api/soportes_form/{{ soporte.id }}?tipo_editar=soporte"
                 hx-trigger="click"
-                hx-target="#editar-alerta-container"
+                hx-target="#editar-soporte-container"
                 class="btn btn-xs btn-primary">
                     Editar
                 </button>

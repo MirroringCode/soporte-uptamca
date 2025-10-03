@@ -199,7 +199,9 @@
             <table class="table"
             id="alertas-table" 
             hx-get="/api/soporte_estatus?atendido=no&formato=table&es_alerta=si"
-            hx-trigger="load, alertaCreated from:dialog#crearAlerta, soporteDeleted from:body"
+            hx-trigger="load, alertaCreated from:dialog#crearAlerta, 
+            soporteDeleted from:body, 
+            alertaUpdated from:#editarAlerta"
             hx-indicator="#loadSoporte">
             <span id="loadSoporte" class="loading loading-spinner loading-xl htmx-indicator"></span>
             </table>

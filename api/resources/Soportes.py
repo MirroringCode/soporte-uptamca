@@ -76,31 +76,31 @@ class SoportesResource(Resource):
                 errores.append('No se ha encontrado el departamento')
 
             try:
-                validate_required(args['motivo'])
+                validate_required(args['motivo'], 'Debe indicar el motivo')
                 validate_length(args['motivo'], 'el motivo debe contener entre 3 y 100 caracteres', min_length=3, max_length=100)
             except ValueError as e:
                 errores.append(str(e))
 
             if args.get('atendido_por'):
                 try:
-                    validate_numeric(args['atendido_por'])
+                    validate_numeric(args['atendido_por'], 'Solo valores numericos en la id del técnico')
                 except ValueError as e:
                     errores.append(str(e))
 
             try:
-                validate_required(args['id_personal'])
-                validate_numeric(args['id_personal'])
+                validate_required(args['id_personal'], 'Debe indicar al personal solicitante')
+                validate_numeric(args['id_personal'], 'Solo valores numericos en la id del empleado solicitante')
             except ValueError as e:
                 errores.append(str(e))
 
             try:
-                validate_required(args['id_departamento'])
-                validate_numeric(args['id_departamento'])
+                validate_required(args['id_departamento'], 'Debe indicar que departamento solicitó este soporte')
+                validate_numeric(args['id_departamento'], 'Solo valores numericos en la id del departamento')
             except ValueError as e:
                 errores.append(str(e))
 
             try:
-                validate_required(args['fecha'])
+                validate_required(args['fecha'], 'Debe indicar la fecha del soporte')
             except ValueError as e:
                 errores.append(str(e))
 
@@ -189,7 +189,18 @@ class SoporteResource(Resource):
 
     def put(self, soporte_id):
         try:
-            args = put_parser.parse_args()
+            if request.headers.get('Content-Type') == 'application/json':
+                args = put_parser.parse_args()
+            else:
+                args = {
+                    'motivo': request.form.get('motivo'),
+                    'atendido': request.form.get('atendido') == '1',
+                    'atendido_por': request.form.get('atendido_por'),
+                    'id_personal': request.form.get('id_personal'),
+                    'id_departamento': request.form.get('id_departamento'),
+                    'fecha': request.form.get('fecha')
+                }
+
             soporte = Soporte.query.get(soporte_id)
             errores = []
             empleado = Personal.query.get(args['id_personal'])
@@ -199,19 +210,69 @@ class SoporteResource(Resource):
 
 
             if not soporte:
+                if is_htmx_request():
+                    html = render_template('/components/alert.html',
+                                           Success=False,
+                                           message='Usuario no encontrado',
+                                           alert_type='alert-error')
+                    return make_response(html, 404)
                 return {
                     'success': False,
                     'message': 'Soporte no encontrado'
                 }, 404
             
-            if not empleado:
+            if not empleado and empleado != None:
                 errores.append('No se ha encontrado a este empleado')
-            if not tecnico:
+            if not tecnico and tecnico != None:
                 errores.append('No se ha encontrado a este técnico')
-            if not departamento:
+            if not departamento and departamento != None:
                 errores.append('No se ha encontrado el departamento')
 
+            try:
+                validate_required(args['motivo'], 'Debe indicar el motivo')
+                validate_length(args['motivo'], 'el motivo debe contener entre 3 y 100 caracteres', min_length=3, max_length=100)
+            except ValueError as e:
+                errores.append(str(e))
+
+            if args.get('atendido_por'):
+                try:
+                    validate_numeric(args['atendido_por'], 'Solo valores numericos en la id del técnico')
+                except ValueError as e:
+                    errores.append(str(e))
+
+            try:
+                validate_required(args['id_personal'], 'Debe indicar al personal solicitante')
+                validate_numeric(args['id_personal'], 'Solo valores numericos en la id del empleado solicitante')
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['id_departamento'], 'Debe indicar que departamento solicitó este soporte')
+                validate_numeric(args['id_departamento'], 'Solo valores numericos en la id del departamento')
+            except ValueError as e:
+                errores.append(str(e))
+
+            try:
+                validate_required(args['fecha'], 'Debe indicar la fecha del soporte')
+            except ValueError as e:
+                errores.append(str(e))
+
             if errores:
+                if is_htmx_request():
+                    errors_html = """
+                        <div class="container">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold">Errores de validación:</h3>
+                                <ul class="list-disc pl-5">
+                                    {}
+                                </ul>
+                            </div>
+                        </div>                    
+                    """.format("".join(f"<li>{ error }</li>" for error in errores))
+                    return make_response(errors_html, 422)
                 return {
                     'success': False,
                     'errors': errores,
@@ -220,7 +281,7 @@ class SoporteResource(Resource):
 
             if args['motivo']:
                 soporte.motivo = args['motivo']
-            if 'atendido' in args:
+            if args['atendido'] != None:
                 soporte.atendido = args['atendido']
             if args['atendido_por']:
                 soporte.atendido_por = args['atendido_por']
@@ -231,6 +292,13 @@ class SoporteResource(Resource):
             if args['fecha']:
                 soporte.fecha = args['fecha']
             db.session.commit()
+
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=True,
+                                       message='Soporte modificado exitosamente',
+                                       alert_type='alert-success')
+                return make_response(html, 200)
             return {
                 'success': True,
                 'message': 'Soporte actualizado exitosamente',
@@ -239,6 +307,11 @@ class SoporteResource(Resource):
 
         except Exception as e:
             db.session.rollback()
+            if is_htmx_request():
+                html = render_template('/components/alert.html',
+                                       success=False,
+                                       message=str(e),
+                                       alert_type='alert-error')
             return {
                 'success': False,
                 'error': str(e),
@@ -384,7 +457,7 @@ class SoporteEditarFormResource(Resource):
         elif tipo_editar_param == 'soporte':
             html = render_template('soportes/partials/form_editar_soporte.html',
                                    soporte=soporte,
-                                   empelados=empleados,
+                                   empleados=empleados,
                                    departamentos=departamentos,
                                    users=users)
             return make_response(html, 200)

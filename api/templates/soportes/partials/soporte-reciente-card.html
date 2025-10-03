@@ -1,16 +1,24 @@
-{% for soporte in soportes %}
-<li>
-    <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-lg">
-    <div class="card-body">
-        <h2 class="card-title">{{ soporte.motivo }}</h2>
-        <p>{{ soporte.departamento.nombre }} - {{ soporte.solicitante.nombre + ' ' + soporte.solicitante.apellido }}</p>
-        <legend class="font-bold">{{ soporte.fecha.strftime('%d-%m-%Y %H:%I %p') }}</legend>
-        <div class="justify-end card-actions">
-        {% if not soporte.atendido %}
-        <button class="btn btn-success">Marcar como atendido</button>
+{% if not soportes %}
+    <h3 class="font-bold">No hay soportes recientes</h3>
+{% else %}
+    {% for soporte in soportes %}
+    <li>
+        <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-lg">
+        <div class="card-body">
+            <h2 class="card-title">{{ soporte.motivo }}</h2>
+            <p>{{ soporte.departamento.nombre }} - {{ soporte.solicitante.nombre + ' ' + soporte.solicitante.apellido }}</p>
+            <legend class="font-bold">{{ soporte.fecha.strftime('%d-%m-%Y %H:%I %p') }}</legend>
+            <div class="justify-end card-actions">
+            {% if not soporte.atendido %}
+            <button class="btn btn-success"onclick="editarAlerta.showModal()"
+            hx-get="/api/soportes_form/{{ soporte.id }}?tipo_editar=alerta"
+            hx-trigger="click"
+            hx-target="#editar-alerta-container"
+            hx-swap="innerHTML">Marcar como atendido</button>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
-    </div>
-</li>
-{% endfor %}
+        </div>
+    </li>
+    {% endfor %}
+{% endif %}
