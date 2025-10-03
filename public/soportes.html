@@ -97,14 +97,14 @@
             </h1>
  
 
-            <div id="response" class="mb-4"></div>
+            <div data-response class="mb-4"></div>
 
             
             <form method="POST" class="w-100 my-0 mx-auto"
             hx-post="/api/soportes" 
             hx-target="div[data-soporte-toast]"
             hx-disabled-elt="button[type='submit']"
-            hx-target-422="#response"
+            hx-target-422="[data-response]"
             hx-target-5*="div[data-soporte-toast]"
             hx-swap="innerHTML"
             id="crearSoporteForm">
@@ -173,6 +173,35 @@
             <button></button>
           </form>
         </dialog>
+
+          <dialog class="modal" id="editarSoporte">
+          <div class="toast toast-top" data-toast data-soporte-toast>
+          </div>
+          <div class="modal-box">
+            <h1 class="text-3xl font-bold text-center">
+              Modificar información de soporte
+            </h1>
+
+            <div data-response class="mb-4"></div>
+            
+            <div id="editar-soporte-container">
+              
+            </div>
+
+            <div class="modal-action">
+                <button type="submit" form="editarSoporteForm" class="btn btn-success">Aceptar</button>
+                <form method="dialog">
+                  <button class="btn">Cerrar</button>
+                </form>
+
+            </div>
+          </div>
+          <form action="" method="dialog" class="modal-backdrop">
+            <button></button>
+          </form>
+        </dialog>
+
+
 
 
         <div class="dropdown dropdown-right">
