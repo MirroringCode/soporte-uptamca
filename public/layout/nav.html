@@ -19,6 +19,8 @@
     </li>
 
     <li class="mt-auto">
-        <button class="btn btn btn-soft btn-secondary">Salir</button>
+        <form method="POST" hx-post="/api/logout" hx-trigger="click" hx-target="body" hx-swap="none">
+            <button type="submit" class="btn btn btn-soft btn-secondary">Salir</button>
+        </form>
     </li>
 </ul>

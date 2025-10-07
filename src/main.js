@@ -7,6 +7,7 @@ import { config } from './config';
 window.htmx = htmx;
 
 htmx.config.selfRequestsOnly = false;
+htmx.config.withCredentials = true;
 document.body.addEventListener('htmx:configRequest', (e) => {
     const path = e.detail.path;
     
@@ -15,6 +16,26 @@ document.body.addEventListener('htmx:configRequest', (e) => {
         e.detail.path = API_BASE_URL + e.detail.path;
     }
 });
+
+document.body.addEventListener('htmx:afterRequest', (evt) => {
+    const redirectUrl = evt.detail.xhr.getResponseHeader('HX-Redirect');
+
+    if (redirectUrl) {
+        window.location.href = redirectUrl;
+        return;
+    }
+
+    if(evt.detail.failed && evt.detail.xhr.status === 401) {
+        showToast('Sesión expirada. Por favor ingresa nuevamente.', 'error');
+
+        // Redirigir si es una petición importante
+        setTimeout(() => {
+            window.location.href = '/login.html'
+        }, 1500)
+    }
+});
+
+
 
 const elements = {
     themeSwap: document.querySelector('#themeSwap input[type="checkbox"]'),
@@ -47,4 +68,12 @@ if (elements.themeSwap) {
     });
 }
 
-
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast-notification');
+    toast.innerHTML = `
+        <div class="alert alert-${type}">
+            ${message}
+        </div>
+    `;
+    setTimeout(() => toast.innerHTML = '', 3000);
+}
