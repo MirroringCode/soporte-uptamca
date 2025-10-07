@@ -1,8 +1,10 @@
 from flask import request, make_response, render_template
 from flask_restful import Resource
 from models import Rol
+from auth import jwt_required
 
 class RolResource(Resource):
+    @jwt_required
     def get(self):
         try:
             roles = Rol.query.all()

@@ -11,6 +11,7 @@ from common.validator import (
     validate_date_format
 )
 from common.check_htmx_request import is_htmx_request
+from auth import jwt_required
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('motivo', type=str, required=True, help='Debe indicar el motivo del soporte')
@@ -29,6 +30,7 @@ put_parser.add_argument('id_departamento', type=int, required=False)
 put_parser.add_argument('fecha', type=str, required=False)
 
 class SoportesResource(Resource):
+    @jwt_required
     def get(self):
         try:
             soportes = Soporte.query.all()
@@ -166,6 +168,7 @@ class SoportesResource(Resource):
             }, 500
     
 class SoporteResource(Resource):
+    @jwt_required
     def get(self, soporte_id):
         try:
             soporte = Soporte.query.get(soporte_id)
@@ -356,6 +359,7 @@ class SoporteResource(Resource):
 
 
 class SoporteStatusResource(Resource):
+    @jwt_required
     def get(self):
         try:
             atendido_param = request.args.get('atendido')
@@ -397,6 +401,7 @@ class SoporteStatusResource(Resource):
             }, 500
 
 class SoportesCountResource(Resource):
+    @jwt_required
     def get(self):
         try:
 
@@ -439,6 +444,7 @@ class SoportesCountResource(Resource):
             }
 
 class SoporteEditarFormResource(Resource):
+    @jwt_required
     def get(self, soporte_id):
         soporte = Soporte.query.get_or_404(soporte_id)
         departamentos = Departamento.query.all()

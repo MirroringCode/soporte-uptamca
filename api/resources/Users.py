@@ -8,6 +8,7 @@ from common.validator import (
 from common.check_htmx_request import is_htmx_request
 from models import User, Rol
 from db import db
+from auth import jwt_required
 
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('username', type=str, required=True)
@@ -25,6 +26,7 @@ password_parser.add_argument('new_password', type=str, required=True)
 password_parser.add_argument('confirm_new_password', type=str, required=True)
 
 class UsersResource(Resource):
+    @jwt_required
     def get(self):
         try:
             users = User.query.all()
@@ -160,6 +162,7 @@ class UsersResource(Resource):
         
 
 class UserResource(Resource):
+        @jwt_required
         def put(self, user_id):
             """ Actualizar usuario existente """
             try:
@@ -315,7 +318,7 @@ class UserResource(Resource):
 
 
 class PasswordResource(Resource):
-
+    @jwt_required
     def get(self, user_id):
         user = User.query.get_or_404(user_id)
         if is_htmx_request():
@@ -406,6 +409,7 @@ class PasswordResource(Resource):
             }, 500
 
 class UserOptionResource(Resource):
+    @jwt_required
     def get(self):
         users = User.query.all()
 
@@ -414,6 +418,7 @@ class UserOptionResource(Resource):
             return make_response(html, 200)             
 
 class UserFormResource(Resource):
+    @jwt_required
     def get(self, user_id):
         user = User.query.get_or_404(user_id)
         roles = Rol.query.all()

@@ -2,8 +2,10 @@ from flask import request, render_template, make_response
 from flask_restful import Resource
 from models import Departamento
 from common.check_htmx_request import is_htmx_request
+from auth import jwt_required
 
 class DepartamentoResource(Resource):
+    @jwt_required
     def get(self):
         try:
             departamentos = Departamento.query.all()

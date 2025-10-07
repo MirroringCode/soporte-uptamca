@@ -9,6 +9,7 @@ from common.validator import (
 )
 from common.check_htmx_request import is_htmx_request
 from db import db
+from auth import jwt_required
 
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
@@ -25,6 +26,7 @@ put_parser.add_argument('id_departamento', type=int, required=False, help='Debe 
 
 class PersonalResource(Resource):
     """ Método para traer todos los empleados existentes en base de datos """
+    @jwt_required
     def get(self):
         try:
             # Hace consulta a la base de datos
@@ -157,6 +159,7 @@ class PersonalResource(Resource):
             
 
 class EmpleadoResource(Resource):
+    @jwt_required
     def put(self, personal_id):
         try:
             if request.headers.get('Content-Type') == 'application/json': 
@@ -323,6 +326,7 @@ class EmpleadoResource(Resource):
             }, 500
 
 class PersonalOptionResource(Resource):
+    @jwt_required
     def get(self):
         personal = Personal.query.all()
 
@@ -332,6 +336,7 @@ class PersonalOptionResource(Resource):
 
 
 class FormEditarResource(Resource):
+    @jwt_required
     def get(self, personal_id):
         empleado = Personal.query.get_or_404(personal_id)
         departamentos = Departamento.query.all()
