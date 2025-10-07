@@ -23,7 +23,7 @@ db.init_app(app)
 api = Api(app)
 CORS(app, expose_headers=['HX-Redirect'], supports_credentials=True)
 
-from resources.Users import UsersResource, UserResource, PasswordResource, UserOptionResource, UserFormResource
+from resources.Users import UsersResource, UserResource, PasswordResource, UserOptionResource, UserFormResource, MeResource
 from resources.Personal import PersonalResource, EmpleadoResource, PersonalOptionResource, FormEditarResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
@@ -53,6 +53,7 @@ api.add_resource(DepartamentoResource, '/api/departamentos')
 
 api.add_resource(LoginResource, '/api/login')
 api.add_resource(LogoutResource, '/api/logout')
+api.add_resource(MeResource, '/api/me')
 
 # Ejecuta la app
 if __name__ == '__main__':
