@@ -10,8 +10,7 @@ htmx.config.selfRequestsOnly = false;
 htmx.config.withCredentials = true;
 document.body.addEventListener('htmx:configRequest', (e) => {
     const path = e.detail.path;
-    
-    if(path.startsWith('/api/')) {
+        if(path.startsWith('/api/')) {
         const API_BASE_URL = config().url.api;
         e.detail.path = API_BASE_URL + e.detail.path;
     }
@@ -49,7 +48,7 @@ const elements = {
 } */
 
 // Aplica el tema guardado al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -57,7 +56,29 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.themeSwap.checked = savedTheme === 'dark';
         }
     }
+
+
+        try {
+        const API_BASE_URL = config().url.api;
+        const res = await fetch(`${API_BASE_URL}/api/me`, { credentials: 'include' });
+        if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+            if (data.rol !== 1) {
+                // Oculta el link de usuarios si no es admin
+                const adminLink = document.getElementById('admin-link');
+                if (adminLink) adminLink.style.display = 'none';
+            }
+        }
+    } catch (e) {
+        // Si hay error, mejor ocultar el link por seguridad
+        const adminLink = document.getElementById('admin-link');
+        if (adminLink) adminLink.style.display = 'none';
+    }
+
 });
+
+
 
 // Cambia el tema y lo guarda en localStorage
 if (elements.themeSwap) {

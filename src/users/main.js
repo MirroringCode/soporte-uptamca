@@ -33,6 +33,7 @@ elements.forms.crear.addEventListener('htmx:afterRequest', (e) => {
     }
 })
 
+
 // elements.forms.editar.addEventListener('htmx:afterRequest', (e) => {
 //     const modal = document.querySelector('dialog#editarUsuario');
 //     const errorContainer = modal.querySelector('[data-response]');

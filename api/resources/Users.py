@@ -8,7 +8,8 @@ from common.validator import (
 from common.check_htmx_request import is_htmx_request
 from models import User, Rol
 from db import db
-from auth import jwt_required
+from flask_jwt_extended import get_jwt_identity, get_jwt
+from auth import jwt_required, role_required
 
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('username', type=str, required=True)
@@ -27,6 +28,7 @@ password_parser.add_argument('confirm_new_password', type=str, required=True)
 
 class UsersResource(Resource):
     @jwt_required
+    @role_required(1)
     def get(self):
         try:
             users = User.query.all()
@@ -48,6 +50,7 @@ class UsersResource(Resource):
                 'message': 'Hubo un error al obtener la lista de usuario'
             }, 500
 
+    
     def post(self):
         """Crear nuevo usuario"""
         try:
@@ -163,6 +166,7 @@ class UsersResource(Resource):
 
 class UserResource(Resource):
         @jwt_required
+        @role_required(1)
         def put(self, user_id):
             """ Actualizar usuario existente """
             try:
@@ -319,6 +323,7 @@ class UserResource(Resource):
 
 class PasswordResource(Resource):
     @jwt_required
+    @role_required(1)
     def get(self, user_id):
         user = User.query.get_or_404(user_id)
         if is_htmx_request():
@@ -410,6 +415,7 @@ class PasswordResource(Resource):
 
 class UserOptionResource(Resource):
     @jwt_required
+    @role_required(1)
     def get(self):
         users = User.query.all()
 
@@ -419,6 +425,7 @@ class UserOptionResource(Resource):
 
 class UserFormResource(Resource):
     @jwt_required
+    @role_required(1)
     def get(self, user_id):
         user = User.query.get_or_404(user_id)
         roles = Rol.query.all()
@@ -426,3 +433,11 @@ class UserFormResource(Resource):
             html = render_template('users/partials/form_editar_usuario.html', user=user, roles=roles)
             return make_response(html, 200)
         return user.to_dict()
+    
+class MeResource(Resource):
+    @jwt_required
+    def get(self):
+        claims = get_jwt()
+        return {
+            'rol': claims.get('rol')
+        }

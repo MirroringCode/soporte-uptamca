@@ -18,7 +18,9 @@ class LoginResource(Resource):
                                    alert_type='alert-error')
             return make_response(html, 401)
         
-        access_token = create_access_token(identity=str(user.id))
+        access_token = create_access_token(
+            identity=str(user.id),
+            additional_claims={'rol': user.id_rol})
 
 
         response = make_response("Login exitoso")

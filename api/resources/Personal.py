@@ -159,7 +159,6 @@ class PersonalResource(Resource):
             
 
 class EmpleadoResource(Resource):
-    @jwt_required
     def put(self, personal_id):
         try:
             if request.headers.get('Content-Type') == 'application/json': 
