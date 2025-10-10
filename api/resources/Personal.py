@@ -52,6 +52,7 @@ class PersonalResource(Resource):
             }, 500
 
     """ Método para crear un nuevo empleado """
+    @jwt_required
     def post(self):
         try:
             if request.headers.get('Content-Type') == 'application/json':
@@ -159,6 +160,7 @@ class PersonalResource(Resource):
             
 
 class EmpleadoResource(Resource):
+    @jwt_required
     def put(self, personal_id):
         try:
             if request.headers.get('Content-Type') == 'application/json': 
@@ -274,6 +276,7 @@ class EmpleadoResource(Resource):
                 'message': 'Ha habido un error actualizando la información del empleado'
             }, 500
     
+    @jwt_required
     def delete(self, personal_id):
         try:
             empleado = Personal.query.get(personal_id)

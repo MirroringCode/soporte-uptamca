@@ -51,6 +51,7 @@ class SoportesResource(Resource):
                 'message': 'Ha habido un error obteniendo la lista de soportes'
             }, 500
 
+    @jwt_required
     def post(self):
         # PENDIENTE, hacer que atendido cuando sea 0 cuente como false  y validar atendido_por solo cuando está en el request 
         try:
@@ -190,6 +191,7 @@ class SoporteResource(Resource):
             }
 
 
+    @jwt_required
     def put(self, soporte_id):
         try:
             if request.headers.get('Content-Type') == 'application/json':
@@ -321,6 +323,7 @@ class SoporteResource(Resource):
                 'message': 'Ha habido un error actualizando la información del soporte'
             }, 500
         
+    @jwt_required
     def delete(self, soporte_id):
         try:
             soporte = Soporte.query.filter(Soporte.id == soporte_id).first()
@@ -362,6 +365,10 @@ class SoporteStatusResource(Resource):
     @jwt_required
     def get(self):
         try:
+
+            page = request.args.get('page', 1, type=int)
+            per_page = request.args.get('per_page', 5, type=int)
+
             atendido_param = request.args.get('atendido')
             formato_param = request.args.get('formato')
             alerta_param = request.args.get('es_alerta')
@@ -373,11 +380,15 @@ class SoporteStatusResource(Resource):
                 query = query.filter(Soporte.atendido == False).order_by(desc(Soporte.fecha))
             
             soportes = query.all()
+            paginated_soportes = query.paginate(page=page, per_page=per_page, error_out=False)
 
             if is_htmx_request():
                 html = None
                 if formato_param == 'card':
-                    html = render_template('soportes/partials/soporte-reciente-card.html', soportes=soportes)
+                    html = render_template('soportes/partials/soporte-reciente-card.html', 
+                                           soportes=paginated_soportes.items,
+                                           pagination=paginated_soportes)
+                    
                 if formato_param == 'table' or formato_param == None:
                     if alerta_param == 'si':
                         html = render_template('soportes/partials/table.html', 
@@ -389,7 +400,13 @@ class SoporteStatusResource(Resource):
 
             return {
                 'success': True,
-                'data': [s.to_dict() for s in soportes] or 'No se encontraron soportes',
+                'data': [s.to_dict() for s in paginated_soportes.items] or 'No se encontraron soportes',
+                'pagination': {
+                    'total': paginated_soportes.total,
+                    'pages': paginated_soportes.pages,
+                    'current_page': paginated_soportes.page,
+                    'per_page': paginated_soportes.per_page
+                },
                 'message': 'Soportes obtenidos exitosamente',
                 'count': len(soportes),
             }, 200           
