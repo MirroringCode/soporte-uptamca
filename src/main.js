@@ -3,6 +3,7 @@ import 'htmx-ext-response-targets'
 import { swapTheme } from "./utils/swapTheme";
 import { checkAllTable } from "./utils/checkboxAllTable";
 import { config } from './config';
+import { getCookie } from './utils/getCookie';
 
 window.htmx = htmx;
 
@@ -14,6 +15,12 @@ document.body.addEventListener('htmx:configRequest', (e) => {
         const API_BASE_URL = config().url.api;
         e.detail.path = API_BASE_URL + e.detail.path;
     }
+
+    const csrfToken = getCookie('csrf_access_token');
+    if (csrfToken) {
+        e.detail.headers['X-CSRF-TOKEN'] = csrfToken;
+    }
+
 });
 
 document.body.addEventListener('htmx:afterRequest', (evt) => {

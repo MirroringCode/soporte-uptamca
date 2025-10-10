@@ -208,7 +208,7 @@
         <div class="overflow-x-auto overflow-y-auto max-h-120 mx-3">
             <table class="table" 
             hx-get="/api/soportes"
-            hx-trigger="load, soporteCreated from:dialog#crearSoporte, soporteDeleted from:body"
+            hx-trigger="load, soporteCreated from:dialog#crearSoporte, soporteDeleted from:body, soporteUpdated from:#editarSoporte"
             hx-indicator="#loadSoporte"
             id="soportes-table">
             <span id="loadSoporte" class="loading loading-spinner loading-xl htmx-indicator"></span>

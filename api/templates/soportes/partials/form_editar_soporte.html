@@ -5,6 +5,26 @@ hx-disabled-elt="button[type='submit']"
 hx-target-422="#editarSoporte [data-response]"
 hx-target-5*="#editarSoporte div[data-soporte-toast]"
 hx-swap="innerHTML"
+hx-on::after-request="
+const modal = document.querySelector('#editarSoporte');
+const errorContainer = modal.querySelector('[data-response]');
+const toastContainer = modal.querySelector('[data-soporte-toast]');
+const request = event.detail.xhr;
+
+if (request.status === 200) {
+    errorContainer.innerHTML = '';
+
+    htmx.trigger(modal, 'soporteUpdated');
+
+    setTimeout(() => {
+        toastContainer.innerHTML = '';
+        modal.close();
+    }, 1000);
+} else if (request.status === 422) {
+    toastContainer.innerHTML = '';
+}
+
+"
 id="editarSoporteForm">
     <fieldset class="fielset w-100 my-[1.5em]">
     <legend class="fieldset-legend">Motivo</legend>
