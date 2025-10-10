@@ -10,6 +10,7 @@ from models import User, Rol
 from db import db
 from flask_jwt_extended import get_jwt_identity, get_jwt
 from auth import jwt_required, role_required
+from sqlalchemy import desc
 
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('username', type=str, required=True)
@@ -34,7 +35,8 @@ class UsersResource(Resource):
             users = User.query.all()
 
             if is_htmx_request():
-                html = render_template('users/partials/table.html', users=users)
+                html = render_template('users/partials/table.html',
+                                       users=users)
                 return make_response(html, 200)
 
             return {
@@ -50,7 +52,7 @@ class UsersResource(Resource):
                 'message': 'Hubo un error al obtener la lista de usuario'
             }, 500
 
-    
+    @jwt_required
     def post(self):
         """Crear nuevo usuario"""
         try:
@@ -268,6 +270,7 @@ class UserResource(Resource):
                     'message': 'Error al actualizar la información de usuario'
                 }, 500
             
+        @jwt_required
         def delete(self, user_id):
             try:
                 user = User.query.get(user_id)
@@ -331,6 +334,7 @@ class PasswordResource(Resource):
                                    user=user)
             return make_response(html, 200)
 
+    @jwt_required
     def put(self, user_id):
         """ Reiniciar contraseña con confirmación """
         try:
