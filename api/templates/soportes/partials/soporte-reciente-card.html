@@ -1,6 +1,7 @@
 {% if not soportes %}
     <h3 class="font-bold">No hay soportes recientes</h3>
 {% else %}
+<span id="loadAlertas" class="loading loading-spinner loading-xl htmx-indicator"></span>
     {% for soporte in soportes %}
     <li>
         <div class="card lg:w-220 w-100 bg-base-100 ml-[1.5em] card-md shadow-lg">
@@ -14,11 +15,51 @@
             hx-get="/api/soportes_form/{{ soporte.id }}?tipo_editar=alerta"
             hx-trigger="click"
             hx-target="#editar-alerta-container"
-            hx-swap="innerHTML">Marcar como atendido</button>
+            hx-swap="innerHTML"
+            hx-indicator="#loadAlertas">Marcar como atendido</button>
             </div>
             {% endif %}
         </div>
         </div>
     </li>
     {% endfor %}
+
+
+    <!-- Paginación DaisyUI -->
+    <div class="join mt-6 ml-[1.5em]">
+        <span id="loadPagination" class="loading loading-spinner loading-xl htmx-indicator"></span>
+        {% if pagination.has_prev %}
+        <button class="join-item btn btn-sm"
+                hx-get="/api/soporte_estatus?page={{ pagination.prev_num }}&atendido=no&formato=card"
+                hx-target="closest ul"
+                hx-swap="innerHTML"
+                hx-indicator="#loadPagination">
+            «
+        </button>
+        {% endif %}
+
+        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2) %}
+            {% if page_num %}
+                <button class="join-item btn btn-sm {% if page_num == pagination.page %}btn-active{% endif %}"
+                        hx-get="/api/soporte_estatus?page={{ page_num }}&atendido=no&formato=card"
+                        hx-target="closest ul"
+                        hx-swap="innerHTML"
+                        hx-indicator="#loadPagination">
+                    {{ page_num }}
+                </button>
+            {% else %}
+                <button class="join-item btn btn-sm btn-disabled">...</button>
+            {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+        <button class="join-item btn btn-sm"
+                hx-get="/api/soporte_estatus?page={{ pagination.next_num }}&atendido=no&formato=card"
+                hx-target="closest ul"
+                hx-swap="innerHTML"
+                hx-indicator="#loadPagination">
+            »
+        </button>
+        {% endif %}
+    </div>
 {% endif %}

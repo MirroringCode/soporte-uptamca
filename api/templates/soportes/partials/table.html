@@ -23,7 +23,7 @@
             <td>{{ soporte.user.username or 'N/A' }}</td>
             <td>{{ (soporte.solicitante.nombre ~ ' ' ~ soporte.solicitante.apellido) if soporte.solicitante else 'N/A' }}</td>
             <td>{{ soporte.departamento.nombre or 'N/A' }}</td>
-            <td>{{ soporte.fecha or 'N/A' }}</td>
+            <td>{{ soporte.fecha.strftime('%d-%m-%Y %H:%I %p') or 'N/A' }}</td>
             <td>
                 {% if es_alerta %}
                 <button onclick="editarAlerta.showModal()"
