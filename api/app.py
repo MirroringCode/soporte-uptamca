@@ -24,10 +24,10 @@ api = Api(app)
 CORS(app, expose_headers=['HX-Redirect'], supports_credentials=True)
 
 from resources.Users import UsersResource, UserResource, PasswordResource, UserOptionResource, UserFormResource, MeResource
-from resources.Personal import PersonalResource, EmpleadoResource, PersonalOptionResource, FormEditarResource
+from resources.Personal import PersonalResource, EmpleadoResource, PersonalOptionResource, FormEditarResource, PersonalFormFiltrarResource
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
-from resources.Soportes import SoportesResource, SoporteResource, SoporteStatusResource, SoportesCountResource, SoporteEditarFormResource
+from resources.Soportes import SoportesResource, SoporteResource, SoporteStatusResource, SoportesCountResource, SoporteEditarFormResource, SoporteFormFiltrarResource
 from resources.Auth import LoginResource, LogoutResource
 
 # Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
@@ -41,12 +41,14 @@ api.add_resource(PersonalResource, '/api/personal')
 api.add_resource(PersonalOptionResource, '/api/personal_options')
 api.add_resource(EmpleadoResource, '/api/personal/<int:personal_id>')
 api.add_resource(FormEditarResource, '/api/personal_form/<int:personal_id>')
+api.add_resource(PersonalFormFiltrarResource, '/api/personal_filtrar_form')
 
 api.add_resource(SoportesResource, '/api/soportes')
 api.add_resource(SoporteResource, '/api/soportes/<int:soporte_id>')
 api.add_resource(SoporteStatusResource, '/api/soporte_estatus')
 api.add_resource(SoportesCountResource, '/api/soportes_count')
 api.add_resource(SoporteEditarFormResource, '/api/soportes_form/<int:soporte_id>')
+api.add_resource(SoporteFormFiltrarResource, '/api/filtrar_form')
 
 api.add_resource(RolResource, '/api/roles')
 api.add_resource(DepartamentoResource, '/api/departamentos')

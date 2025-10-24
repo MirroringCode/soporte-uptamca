@@ -82,10 +82,19 @@
 
         <h1 class="text-3xl font-bold text-center my-[1em]">Listado de soportes</h1>
 
-    <div class="flex flex-col lg:flex-row items-center w-full gap-5 justify-around">
+    <div class="flex flex-col items-center w-full gap-5 justify-between">
 
         <div>
             <button class="btn btn-success" onclick="crearSoporte.showModal()">Crear nuevo soporte</button>
+        </div>
+
+
+        <small class="font-bold">Busqueda de soportes</small>
+
+        <div class="flex flex-wrap justify-around"
+        hx-get="/api/filtrar_form"
+        hx-trigger="load">          
+
         </div>
 
           <dialog class="modal" id="crearSoporte">
