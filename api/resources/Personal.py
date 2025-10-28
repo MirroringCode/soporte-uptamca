@@ -29,8 +29,20 @@ class PersonalResource(Resource):
     @jwt_required
     def get(self):
         try:
+
+            cedula = request.args.get('cedula')
+            id_departamento = request.args.get('id_departamento')
+
+            query = Personal.query
+
+            if cedula:
+                query = query.filter(Personal.cedula.like(f'%{cedula}%'))
+            
+            if id_departamento:
+                query = query.filter(Personal.id_departamento == id_departamento)
+
             # Hace consulta a la base de datos
-            empleados = Personal.query.all()          
+            empleados = query.all()
 
             if is_htmx_request():
                 html = render_template('personal/partials/table.html', empleados=empleados)
@@ -325,8 +337,10 @@ class FormEditarResource(Resource):
         
 class PersonalFormFiltrarResource(Resource):
     def get(self):
+        departamentos = Departamento.query.all()
         if is_htmx_request():
-            html = render_template('/personal/partials/form_filtrar.html')
+            html = render_template('/personal/partials/form_filtrar.html',
+                                   departamentos=departamentos)
             return make_response(html, 200)
         else:
             return 'No autorizado'

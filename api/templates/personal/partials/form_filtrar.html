@@ -1,26 +1,54 @@
 <div class="flex flex-wrap justify-around">          
-    <form action="" class="flex flex-wrap justify-center gap-5">
+    <form
+    hx-get="/api/personal"
+    hx-target="#table-personal"
+    hx-trigger="submit, filterChanged from:body"
+    class="flex flex-wrap justify-center gap-5"
+    id="form-filtro">
 
 
         <div class="input-group flex flex-col lg:w-40 sm:w-75">
             <label for="">Cédula</label>
-            <input class="input" type="text" placeholder="Cédula del empleado" name="" id="">
+            <input class="input" type="number" placeholder="Cédula del empleado"
+            step="1"
+            name="cedula"
+            hx-trigger="keyup changed delay:500ms"
+            hx-get="/api/personal"
+            hx-target="#table-personal"
+            hx-include="select[name='id_departamento']">
         </div>
 
         <div class="input-group flex flex-col lg:w-50 sm:w-75">
             <label for="">Departamento</label>
-            <select name="" class="select" id="">
+            <select name="id_departamento" class="select"
+            hx-trigger="change"
+            hx-get="/api/personal"
+            hx-target="#table-personal"
+            hx-include="input[name='cedula']">
                 <option value="">Seleccione el departamento</option>
+                {% for departamento in departamentos %}
+                <option value="{{ departamento.id }}">{{ departamento.nombre }}</option>
+                {% endfor %}
             </select>
         </div>
 
         <div>
-        <button type="submit" class="btn btn-primary mt-[1.5em] lg:w-15 sm:w-75">
+<!--         <button type="submit" class="btn btn-primary mt-[1.5em] lg:w-15 sm:w-75">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" 
             fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /> 
             </svg>
-        </button>
+        </button> -->
+            <button hx-get="/api/personal"
+                    hx-target="#table-personal"
+                    hx-trigger="click"
+                    onclick="document.getElementById('form-filtro').reset()"
+                    class="btn btn-primary mt-[1.5em]"
+                    title="Resetear filtros">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
         </div>
 
     </form>

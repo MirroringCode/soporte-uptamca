@@ -2,3 +2,14 @@
 @plugin "daisyui" {
     
 }
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0; /* Important to remove the default margin added by some browsers */
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* For Firefox */
+  appearance: textfield; /* Standard property for other browsers */
+}
