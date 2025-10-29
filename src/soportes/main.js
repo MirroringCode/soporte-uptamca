@@ -31,4 +31,16 @@ elements.forms.crear.addEventListener('htmx:afterRequest', (e) => {
     }
 });
 
+// Disparar evento después de crear/actualizar/eliminar
+document.addEventListener('htmx:afterRequest', (e) => {
+    if (['POST', 'PUT', 'DELETE']
+        .includes(e.detail.requestConfig.verb.toUpperCase()) && 
+        e.detail.requestConfig.path.includes('/api/soportes')) {
+        
+        // Disparar actualización de filtros
+        htmx.trigger('body', 'filterChanged');
+    }
+});              
+
+
 closeAllModals(elements.modals);

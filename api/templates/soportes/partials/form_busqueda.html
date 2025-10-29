@@ -1,72 +1,147 @@
-<div class="flex flex-wrap justify-around">          
-
-    <form action="" class="flex flex-wrap justify-center gap-5">
+<div class="flex flex-wrap justify-around">
 
 
-        {% if not es_alerta %}
+    {% if es_alerta %}
+    <form
+    hx-get="/api/soporte_estatus?atendido=no&formato=table&es_alerta=si"
+    hx-target="#alertas-table"
+    hx-trigger="submit, filterChanged from:body" 
+    class="flex flex-wrap justify-center gap-5"
+    id="filtrarAlertas">
+
         <div class="input-group flex flex-col lg:w-40 sm:w-75">
-            <label for="">Motivo</label>
-            <input class="input" type="text" placeholder="Escriba el motivo" name="" id="">
-        </div>
-
-        <div class="input-group flex flex-col lg:w-40 sm:w-75">
-            <label for="">Atendido por</label>
-            <select name="" class="select" id="">
-                <option value="">Seleccioen el técnico que atendió el soporte</option>
-            </select>
+            <label for="motivo">Motivo</label>
+            <input class="input input-filter" 
+            type="text" 
+            placeholder="Escriba el motivo" 
+            name="motivo">
         </div>
 
         <div class="input-group flex flex-col lg:w-50 sm:w-75">
-            <label for="">Departamento</label>
-            <select name="" class="select" id="">
+            <label for="departamento">Departamento</label>
+            <select name="departamento" 
+            class="select input-filter">
                 <option value="">Seleccione el departamento</option>
+                {% for departamento in departamentos %}
+                <option value="{{ departamento.id }}">{{ departamento.nombre }}</option>
+                {% endfor %}
             </select>
         </div>
 
         <div class="input-group flex flex-col lg:w-40 sm:w-75">
-            <label for="">Status</label>
-            <select name="" class="select" id="">
-                <option value="">Seleccione el estatus del soporte</option>
-                <option value="si">Atendido</option>
-                <option value="no">Pendiente</option>
-            </select>
+            <label for="fecha">Fecha del soporte</label>
+            <input type="date" 
+            class="input input-filter"
+            name="fecha">               
         </div>
-
-        <div class="input-group flex flex-col lg:w-40 sm:w-75">
-            <label for="">Fecha del soporte</label>
-            <input type="date" class="input" name="fecha">               
-        </div>
-
-
-        {% elif es_alerta %}
-        <div class="input-group flex flex-col lg:w-40 sm:w-75">
-            <label for="">Motivo</label>
-            <input class="input" type="text" placeholder="Escriba el motivo" name="" id="">
-        </div>
-
-        <div class="input-group flex flex-col lg:w-50 sm:w-75">
-            <label for="">Departamento</label>
-            <select name="" class="select" id="">
-                <option value="">Seleccione el departamento</option>
-            </select>
-        </div>
-
-        <div class="input-group flex flex-col lg:w-40 sm:w-75">
-            <label for="">Fecha del soporte</label>
-            <input type="date" class="input" name="fecha">               
-        </div>
-        {% endif %}
-
-
-
+        
         <div>
-        <button type="submit" class="btn btn-primary mt-[1.5em] lg:w-15 sm:w-75">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" 
-            fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /> 
-            </svg>
-        </button>
+            <button type="submit" class="btn btn-primary mt-[1.5em] lg:w-15 sm:w-75">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /> 
+                </svg>
+            </button>
+
+            <button hx-get="/api/soporte_estatus?atendido=no&formato=table&es_alerta=si"
+                    hx-target="#alertas-table"
+                    hx-trigger="click"
+                    onclick="document.getElementById('filtrarAlertas').reset()"
+                    class="btn btn-primary mt-[1.5em]"
+                    title="Resetear filtros">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
+
         </div>
 
     </form>
+
+
+
+
+
+    {% else %}
+    <form
+    hx-get="/api/soportes"
+    hx-target="#soportes-table"
+    hx-trigger="submit, filterChanged from:body" 
+    class="flex flex-wrap justify-center gap-5"
+    id="filtrarSoportes">
+
+        <div class="input-group flex flex-col lg:w-40 sm:w-75">
+            <label for="motivo">Motivo</label>
+            <input class="input input-filter" 
+            type="text" 
+            placeholder="Escriba el motivo" 
+            name="motivo">
+        </div>
+
+        <div class="input-group flex flex-col lg:w-40 sm:w-75">
+            <label for="atendido_por">Atendido por</label>
+            <select name="atendido_por" 
+            class="select input-filter">
+                <option value="">Seleccione el técnico que atendió el soporte</option>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}">{{ usuario.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="input-group flex flex-col lg:w-50 sm:w-75">
+            <label for="departamento">Departamento</label>
+            <select name="departamento" 
+            class="select input-filter">
+                <option value="">Seleccione el departamento</option>
+                {% for departamento in departamentos %}
+                <option value="{{ departamento.id }}">{{ departamento.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="input-group flex flex-col lg:w-40 sm:w-75">
+            <label for="status">Status</label>
+            <select name="status" 
+            class="select input-filter">
+                <option value="">Seleccione el estatus del soporte</option>
+                <option value="atendido">Atendido</option>
+                <option value="pendiente">Pendiente</option>
+            </select>
+        </div>
+
+        <div class="input-group flex flex-col lg:w-40 sm:w-75">
+            <label for="fecha">Fecha del soporte</label>
+            <input type="date" 
+            class="input input-filter"
+            name="fecha">               
+        </div>
+        
+        <div>
+            <button type="submit" class="btn btn-primary mt-[1.5em] lg:w-15 sm:w-75">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /> 
+                </svg>
+            </button>
+
+            <button hx-get="/api/soportes"
+                    hx-target="#soportes-table"
+                    hx-trigger="click"
+                    onclick="document.getElementById('filtrarSoportes').reset()"
+                    class="btn btn-primary mt-[1.5em]"
+                    title="Resetear filtros">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
+
+        </div>
+
+    </form>
+
+    {% endif %}
+
 </div>
+
+

@@ -33,7 +33,37 @@ class SoportesResource(Resource):
     @jwt_required
     def get(self):
         try:
-            soportes = Soporte.query.all()
+
+            motivo = request.args.get('motivo')
+            atendido_por = request.args.get('atendido_por')
+            departamento = request.args.get('departamento')
+            status = request.args.get('status')
+            fecha = request.args.get('fecha')
+
+
+            query = Soporte.query
+
+            if motivo:
+                query = query.filter(Soporte.motivo.like(f'%{motivo}%'))
+
+            if atendido_por:
+                query = query.filter(Soporte.atendido_por == atendido_por)
+
+            if departamento:
+                query = query.filter(Soporte.id_departamento == departamento)
+
+            if status:
+                if status == 'atendido':
+                    query = query.filter(Soporte.atendido)
+                elif status == 'pendiente':
+                    query = query.filter(Soporte.atendido == 0)
+            
+            if fecha:
+                query = query.filter(Soporte.fecha.like(f'%{fecha}%'))
+
+            
+            soportes = query.all()
+
             if is_htmx_request():
                 html = render_template('soportes/partials/table.html', soportes=soportes)
                 return make_response(html, 200)
@@ -110,19 +140,6 @@ class SoportesResource(Resource):
             if errores:
                 if is_htmx_request():
                     errors_html = render_template('/errors/form_errors.html', errores=errores)
-                    # errors_html = """
-                    #     <div class="container">
-                    #         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                    #             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    #         </svg>
-                    #         <div>
-                    #             <h3 class="font-bold">Errores de validación:</h3>
-                    #             <ul class="list-disc pl-5">
-                    #                 {}
-                    #             </ul>
-                    #         </div>
-                    #     </div>                    
-                    # """.format("".join(f"<li>{ error }</li>" for error in errores))
                     return make_response(errors_html, 422)
                     
 
@@ -374,13 +391,27 @@ class SoporteStatusResource(Resource):
             atendido_param = request.args.get('atendido')
             formato_param = request.args.get('formato')
             alerta_param = request.args.get('es_alerta')
+            motivo = request.args.get('motivo')
+            departamento = request.args.get('departamento')
+            fecha = request.args.get('fecha')
+           
+
             query = Soporte.query
 
             if atendido_param == 'si':
                 query = query.filter(Soporte.atendido == True)
             elif atendido_param == 'no':
                 query = query.filter(Soporte.atendido == False).order_by(desc(Soporte.fecha))
+
+            if motivo:
+                query = query.filter(Soporte.motivo.like(f'%{motivo}%'))
             
+            if departamento:
+                query = query.filter(Soporte.id_departamento == departamento)
+            
+            if fecha:
+                query = query.filter(Soporte.fecha.like(f'%{fecha}%'))
+
             soportes = query.all()
             paginated_soportes = query.paginate(page=page, per_page=per_page, error_out=False)
 
@@ -495,15 +526,13 @@ class SoporteFormFiltrarResource(Resource):
             html = None
             if es_alerta == 'si':
                 html = render_template('soportes/partials/form_busqueda.html',
-                                       es_alerta=True)
+                                       es_alerta=True,
+                                       usuarios=User.query.all(),
+                                       departamentos=Departamento.query.all())
             else:
                 html = render_template('soportes/partials/form_busqueda.html',
-                                       es_alerta=False)
+                                       es_alerta=False,
+                                       usuarios=User.query.all(),
+                                       departamentos=Departamento.query.all())
             return make_response(html, 200)
-        
-
-class SoporteFiltrar(Resource):
-    @jwt_required
-    def post(self):
-        return 'hey'
-
+    
