@@ -382,7 +382,6 @@ class PasswordResource(Resource):
 
 class UserOptionResource(Resource):
     @jwt_required
-    @role_required(1)
     def get(self):
         users = User.query.all()
 
