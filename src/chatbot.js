@@ -104,7 +104,7 @@ function showInitialOptions() {
             <div class="chat-bubble">
                 <p class="font-bold mb-2">${optionsShownCount === 1 ? 'Ahora sí, ¿cómo puedo ayudarte?' : '¿Hay algo más en lo que pueda ayudarte?'}</p>
                 <div class="flex flex-col space-y-2 items-start">
-                    <button class="btn btn-sm btn-outline" onclick="selectOption('teclado_mouse', 'Problemas con Teclado / Mouse ⌨️🖱️')">Teclado / Mouse</button>
+                    <button class="btn btn-sm btn-outline" onclick="selectOption('teclado/mouse', 'Problemas con Teclado / Mouse ⌨️🖱️')">Teclado / Mouse</button>
                     <button class="btn btn-sm btn-outline" onclick="selectOption('impresora', 'Problemas con la Impresora 🖨️')">Impresora</button>
                     <button class="btn btn-sm btn-outline" onclick="selectOption('internet', 'No tengo Conexión a Internet 🌐')">Internet</button>
                     <button class="btn btn-sm btn-outline" onclick="selectOption('contacto_ti', 'Mi equipo está lento / Otros 💻')">Equipo Lento / Otros</button>
