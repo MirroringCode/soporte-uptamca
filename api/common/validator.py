@@ -25,6 +25,9 @@ def validate_date_format(value, fmt='%Y-%m-%d', message = None):
         raise ValueError(message or f'La fecha no coincide con el formato solicitado: {fmt}')
     
 def validate_regex(value, pattern, message="formato invalido"):
-    if not re.match(value, pattern):
-        raise ValueError(message)
+    try:
+        if not re.fullmatch(pattern, str(value)):
+            raise ValueError(message)
+    except re.error:
+        raise ValueError('Patrón regex inválido')
     return value

@@ -8,7 +8,8 @@ from common.validator import (
     validate_required,
     validate_length,
     validate_numeric,
-    validate_date_format
+    validate_date_format,
+    validate_regex
 )
 from common.check_htmx_request import is_htmx_request
 from auth import jwt_required
@@ -111,6 +112,7 @@ class SoportesResource(Resource):
             try:
                 validate_required(args['motivo'], 'Debe indicar el motivo')
                 validate_length(args['motivo'], 'el motivo debe contener entre 3 y 100 caracteres', min_length=3, max_length=100)
+                validate_regex(args['motivo'], r'^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$', 'Solo se permiten letras y números (incluyendo acentos y ñ)')
             except ValueError as e:
                 errores.append(str(e))
 
@@ -254,6 +256,7 @@ class SoporteResource(Resource):
             try:
                 validate_required(args['motivo'], 'Debe indicar el motivo')
                 validate_length(args['motivo'], 'el motivo debe contener entre 3 y 100 caracteres', min_length=3, max_length=100)
+                validate_regex(args['motivo'], r'^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$', 'Solo se permiten letras y números (incluyendo acentos y ñ)')
             except ValueError as e:
                 errores.append(str(e))
 

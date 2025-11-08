@@ -94,13 +94,15 @@ class PersonalResource(Resource):
 
             try:
                 validate_required(args['nombre'])
-                validate_length(args['nombre'], 'El nombre debe tener entre 4 y 100 caracteres', 4, 100)
+                validate_length(args['nombre'], 'El nombre debe tener entre 3 y 15 caracteres', 3, 15)
+                validate_regex(args['nombre'], r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$', 'Solo se permiten letras (incluyendo acentos y ñ)')
             except ValueError as e:
                 errores.append(str(e))
 
             try:
                 validate_required(args['apellido'])
-                validate_length(args['apellido'], 'El apellido debe tener entre 4 y 100 caracteres', 4, 100)
+                validate_length(args['apellido'], 'El apellido debe tener entre 3 y 15 caracteres', 3, 15)
+                validate_regex(args['apellido'], r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$', 'Solo se permiten letras (incluyendo acentos y ñ)')
             except ValueError as e:
                 errores.append(str(e))
 
@@ -203,13 +205,15 @@ class EmpleadoResource(Resource):
 
             try:
                 validate_required(args['nombre'], 'Debe indicar el nombre del empleado')
-                validate_length(args['nombre'], 'El nombre del empleado debe tener entre 4 y 100 caracteres', 4, 100)
+                validate_length(args['nombre'], 'El nombre del empleado debe tener entre 3 y 15 caracteres', 3, 15)
+                validate_regex(args['nombre'], '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$', 'Solo se permiten letras (incluyendo acentos y ñ)')
             except ValueError as e:
                 errores.append(str(e))
 
             try:
                 validate_required(args['apellido'], 'Debe indicar el apellido del empleado')
-                validate_length(args['apellido'], 'El apellido del empleado debe tener entre 4 y 100 caracteres', 4, 100)
+                validate_length(args['apellido'], 'El apellido del empleado debe tener entre 3 y 15 caracteres', 3, 15)
+                validate_regex(args['apellido'], '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$', 'Solo se permiten letras (incluyendo acentos y ñ)')
             except ValueError as e:
                 errores.append(str(e))
 
