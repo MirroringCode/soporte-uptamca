@@ -1,20 +1,20 @@
-<div class="stats shadow">
+<div class="stats shadow lg:w-75">
     <div class="stat">
-        <div class="stat-title">Soportes sin atender</div>
-        <div class="stat-value">{{ no_atendidos or 0 }}</div>
+        <div class="stat-title text-warning">Soportes sin atender</div>
+        <div class="stat-value text-warning">{{ no_atendidos or 0 }}</div>
     </div>
 </div>
 
-<div class="stats shadow">
+<div class="stats shadow lg:w-75">
     <div class="stat">
-        <div class="stat-title">Soportes atendidos</div>
-        <div class="stat-value">{{ atendidos or 0 }}</div>
+        <div class="stat-title text-success">Soportes atendidos</div>
+        <div class="stat-value text-success">{{ atendidos or 0 }}</div>
     </div>
 </div>
 
-<div class="stats shadow">
+<div class="stats shadow lg:w-75 border-primary">
     <div class="stat">
-        <div class="stat-title">Soportes en total</div>
-        <div class="stat-value">{{ total or 0 }}</div>
+        <div class="stat-title text-primary">Soportes en total</div>
+        <div class="stat-value text-primary">{{ total or 0 }}</div>
     </div>
 </div>
