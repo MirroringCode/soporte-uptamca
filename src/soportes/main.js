@@ -16,7 +16,9 @@ elements.forms.crear.addEventListener('htmx:afterRequest', (e) => {
     const request = e.detail.xhr;
 
     if (request.status === 201) {
-        errorContainer.innerHTML = '';
+        if (errorContainer) {
+            errorContainer.innerHTML = '';
+        }
 
         htmx.trigger(modal, 'soporteCreated');
 
