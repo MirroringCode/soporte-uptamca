@@ -121,12 +121,12 @@
 
                 <fieldset class="fielset w-100 my-[1.5em]">
                   <legend class="fieldset-legend">Nombre</legend>
-                  <input type="text" name="nombre" required minlength="3" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
+                  <input type="text" name="nombre" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" required minlength="3"  title="Solo se permiten letras (incluyendo acentos y ñ)" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
                 </fieldset>
 
                 <fieldset class="fielset w-100 my-[1.5em]">
                   <legend class="fieldset-legend">Apellido</legend>
-                  <input type="text" name="apellido" required minlength="3" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Apellido..">
+                  <input type="text" name="apellido" required minlength="3" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"  title="Solo se permiten letras (incluyendo acentos y ñ)" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Apellido..">
                 </fieldset>
 
                 <fieldset class="fielset w-100 my-[1.5em]">

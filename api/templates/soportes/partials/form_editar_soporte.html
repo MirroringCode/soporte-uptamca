@@ -28,7 +28,7 @@ if (request.status === 200) {
 id="editarSoporteForm">
     <fieldset class="fielset w-100 my-[1.5em]">
     <legend class="fieldset-legend">Motivo</legend>
-    <input type="text" required minlength="3" maxlength="100" value="{{ soporte.motivo }}" name="motivo" class="input w-100 my-0 mx-auto" placeholder="Motivo...">
+    <input type="text" required minlength="3" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" title="Solo se permiten letras y números(incluyendo acentos y ñ)" maxlength="100" value="{{ soporte.motivo }}" name="motivo" class="input w-100 my-0 mx-auto" placeholder="Motivo...">
     </fieldset>
 
     <fieldset class="fielset w-100 my-[1.5em]">

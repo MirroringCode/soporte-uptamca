@@ -27,17 +27,17 @@ if (request.status === 200) {
 class="w-100 my-0 mx-auto">
 <fieldset class="fielset w-100 my-[1.5em]">
     <legend class="fieldset-legend">Cédula</legend>
-    <input type="number" name="cedula" value="{{ empleado.cedula }}" required minlength="8" maxlength="10" class="input w-100 my-0 mx-auto" placeholder="12345678">
+    <input type="number" name="cedula" value="{{ empleado.cedula }}" required minlength="8" maxlength="12" class="input w-100 my-0 mx-auto" placeholder="12345678">
 </fieldset>
 
 <fieldset class="fielset w-100 my-[1.5em]">
     <legend class="fieldset-legend">Nombre</legend>
-    <input type="text" name="nombre" required minlength="3" value="{{ empleado.nombre }}" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
+    <input type="text" name="nombre" required minlength="3" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" value="{{ empleado.nombre }}" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Nombre...">
 </fieldset>
 
 <fieldset class="fielset w-100 my-[1.5em]">
     <legend class="fieldset-legend">Apellido</legend>
-    <input type="text" name="apellido" required minlength="3" value="{{ empleado.apellido }}" maxlength="100" class="input w-100 my-0 mx-auto" placeholder="Apellido...">
+    <input type="text" name="apellido" required minlength="3" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" value="{{ empleado.apellido }}" maxlength="15" class="input w-100 my-0 mx-auto" placeholder="Apellido...">
 </fieldset>
 
 <fieldset class="fielset w-100 my-[1.5em]">
