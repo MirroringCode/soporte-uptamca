@@ -26,10 +26,10 @@
 
 
     <!-- Paginación DaisyUI -->
-    <div class="join mt-6 ml-[1.5em]">
+    <div class="join mx-auto my-0">
         <span id="loadPagination" class="loading loading-spinner loading-xl htmx-indicator"></span>
         {% if pagination.has_prev %}
-        <button class="join-item btn btn-sm"
+        <button class="join-item btn btn-md"
                 hx-get="/api/soporte_estatus?page={{ pagination.prev_num }}&atendido=no&formato=card"
                 hx-target="closest ul"
                 hx-swap="innerHTML"
@@ -40,7 +40,7 @@
 
         {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2) %}
             {% if page_num %}
-                <button class="join-item btn btn-sm {% if page_num == pagination.page %}btn-active{% endif %}"
+                <button class="join-item btn text-lg btn-md {% if page_num == pagination.page %}btn-active{% endif %}"
                         hx-get="/api/soporte_estatus?page={{ page_num }}&atendido=no&formato=card"
                         hx-target="closest ul"
                         hx-swap="innerHTML"
@@ -48,12 +48,12 @@
                     {{ page_num }}
                 </button>
             {% else %}
-                <button class="join-item btn btn-sm btn-disabled">...</button>
+                <button class="join-item btn btn-md btn-disabled">...</button>
             {% endif %}
         {% endfor %}
 
         {% if pagination.has_next %}
-        <button class="join-item btn btn-sm"
+        <button class="join-item btn btn-md txt-lg"
                 hx-get="/api/soporte_estatus?page={{ pagination.next_num }}&atendido=no&formato=card"
                 hx-target="closest ul"
                 hx-swap="innerHTML"
