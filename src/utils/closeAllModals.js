@@ -2,9 +2,15 @@ export function closeAllModals(modals) {
 modals.forEach((modal) => {
     modal.addEventListener('close', (e) => {
         const form = modal.querySelector('form');
-        modal.querySelector('[data-response]').innerHTML = '';
+        const responseDiv = modal.querySelector('[data-response]');
+        const toast = modal.querySelector('[data-toast]');
         if (form) form.reset();
-        modal.querySelector(['data-toast']).innerHTML = '';
+        if(responseDiv) {
+            responseDiv.innerHTML = '';
+        }
+        if(toast) {
+            toast.innerHTML = '';
+        }
     });
 });
 } 
