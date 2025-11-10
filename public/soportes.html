@@ -234,5 +234,72 @@
 </div>
 <script type="module" src="../src/main.js"></script>
 <script type="module" src="../src/soportes/main.js"></script>
+<script>
+document.addEventListener('click', async (event) => {
+    const generateBtn = event.target.closest('#downloadSoportesPdf');
+    if (!generateBtn) return;
+
+    event.preventDefault();
+    const originalContent = generateBtn.innerHTML;
+
+    try {
+        // Mostrar loading
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<span class="loading loading-spinner loading-xs"></span> Generando...';
+
+        // Obtener parámetros del formulario
+        const form = document.getElementById('filtrarSoportes');
+        const params = new URLSearchParams(new FormData(form));
+
+        // 1. Hacer la petición con responseType 'blob'
+        const response = await fetch(`http://127.0.0.1:5000/api/soportes/report?${params}`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/pdf' // Especificamos que esperamos un PDF
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
+
+        // 2. Obtener el blob directamente
+        const blob = await response.blob();
+
+        // 3. Crear enlace de descarga
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `soportes_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+        document.body.appendChild(a);
+        a.click();
+
+        // Limpieza
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+
+    } catch (error) {
+        console.error('Error:', error);
+        // Mostrar error (ejemplo con toast de DaisyUI)
+        const toast = document.querySelector('[data-notification]');
+        if (toast) {
+            toast.innerHTML = `
+                <div class="alert alert-error">
+                    <span>Error al generar PDF: ${error.message}</span>
+                </div>
+            `;
+            setTimeout(() => toast.innerHTML = '', 3000);
+        }
+    } finally {
+        // Restaurar botón
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = originalContent;
+    }
+});
+</script>
 </body>
 </html>

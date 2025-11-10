@@ -42,7 +42,27 @@ document.addEventListener('htmx:afterRequest', (e) => {
         // Disparar actualización de filtros
         htmx.trigger('body', 'filterChanged');
     }
-});              
+});
+
+
+document.addEventListener('htmx:afterRequest', (evt) => {
+    if (evt.detail.requestConfig.path.includes('/api/soportes/report')) {
+        const btn = document.getElementById('downloadSoportesPdf');
+
+        if (!evt.detail.successful) {
+            // Mostrar mensaje de error si la generación falla
+            const error = JSON.parse(evt.detail.xhr.response).message;
+            const toast = document.querySelector('[data-toast]');
+            toast.innerHTML = `
+                <div class="alert alert-error">
+                    ${error}
+                </div>
+            `;
+            setTimeout(() => toast.innerHTML = '', 5000);
+        }
+    }
+});
+
 
 
 closeAllModals(elements.modals);

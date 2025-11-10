@@ -21,13 +21,17 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 jwt = JWTManager(app)
 db.init_app(app)
 api = Api(app)
-CORS(app, expose_headers=['HX-Redirect'], supports_credentials=True)
+CORS(app, expose_headers=['HX-Redirect', 'Content-Disposition'], supports_credentials=True)
 
 from resources.Users import UsersResource, UserResource, PasswordResource, UserOptionResource, UserFormResource, MeResource
-from resources.Personal import PersonalResource, EmpleadoResource, PersonalOptionResource, FormEditarResource, PersonalFormFiltrarResource
+from resources.Personal import PersonalResource, EmpleadoResource, PersonalOptionResource, \
+    FormEditarResource, PersonalFormFiltrarResource
+
 from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
-from resources.Soportes import SoportesResource, SoporteResource, SoporteStatusResource, SoportesCountResource, SoporteEditarFormResource, SoporteFormFiltrarResource
+
+from resources.Soportes import SoportesResource, SoporteResource, SoporteStatusResource,\
+      SoportesCountResource, SoporteEditarFormResource, SoporteFormFiltrarResource, SoportesReportResource
 from resources.Auth import LoginResource, LogoutResource
 
 # Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
@@ -49,6 +53,7 @@ api.add_resource(SoporteStatusResource, '/api/soporte_estatus')
 api.add_resource(SoportesCountResource, '/api/soportes_count')
 api.add_resource(SoporteEditarFormResource, '/api/soportes_form/<int:soporte_id>')
 api.add_resource(SoporteFormFiltrarResource, '/api/filtrar_form')
+api.add_resource(SoportesReportResource, '/api/soportes/report')
 
 api.add_resource(RolResource, '/api/roles')
 api.add_resource(DepartamentoResource, '/api/departamentos')

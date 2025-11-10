@@ -13,6 +13,10 @@ from common.validator import (
 )
 from common.check_htmx_request import is_htmx_request
 from auth import jwt_required
+import pdfkit
+import tempfile
+import os
+
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('motivo', type=str, required=True, help='Debe indicar el motivo del soporte')
@@ -539,3 +543,67 @@ class SoporteFormFiltrarResource(Resource):
                                        departamentos=Departamento.query.all())
             return make_response(html, 200)
     
+class SoportesReportResource(Resource):
+    def get(self):
+        try:
+            # Configuración de rutas (ajusta según tu OS)
+            if os.name == 'nt':  # Windows
+                config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+            else:  # Linux/Mac
+                config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+
+            # Obtener parámetros de filtro
+            motivo = request.args.get('motivo')
+            atendido_por = request.args.get('atendido_por')
+            departamento = request.args.get('departamento')
+            status = request.args.get('status')
+            fecha = request.args.get('fecha')
+
+            # Aplicar filtros
+            query = Soporte.query
+            if motivo:
+                query = query.filter(Soporte.motivo.like(f'%{motivo}%'))
+            if atendido_por:
+                query = query.filter(Soporte.atendido_por == atendido_por)
+            if departamento:
+                query = query.filter(Soporte.id_departamento == departamento)
+            if status:
+                query = query.filter(Soporte.atendido == (status.lower() == 'atendido'))
+            if fecha:
+                query = query.filter(Soporte.fecha.like(f'%{fecha}%'))
+
+            soportes = query.all()
+
+            # Renderizar plantilla HTML
+            html_string = render_template(
+                'soportes/partials/report_pdf.html',
+                soportes=soportes,
+                fecha_generacion=datetime.now().strftime('%d/%m/%Y %H:%M')
+            )
+
+            # Opciones para PDF
+            options = {
+                'encoding': 'UTF-8',
+                'margin-top': '15mm',
+                'margin-right': '10mm',
+                'margin-bottom': '15mm',
+                'margin-left': '10mm',
+                'quiet': ''
+            }
+
+            # Generar PDF
+            pdf_data = pdfkit.from_string(
+                html_string,
+                False,
+                options=options,
+                configuration=config
+            )
+
+            # Crear respuesta
+            response = make_response(pdf_data)
+            response.headers['Content-Type'] = 'application/pdf'
+            response.headers['Content-Disposition'] = 'inline; filename=reporte_soportes.pdf'
+            return response
+
+        except Exception as e:
+            return {'error': str(e)}, 500
