@@ -31,7 +31,9 @@ from resources.Rol import RolResource
 from resources.Departamento import DepartamentoResource
 
 from resources.Soportes import SoportesResource, SoporteResource, SoporteStatusResource,\
-      SoportesCountResource, SoporteEditarFormResource, SoporteFormFiltrarResource, SoportesReportResource
+      SoportesCountResource, SoporteEditarFormResource, SoporteFormFiltrarResource, SoportesReportResource, \
+      AlertasReportResource
+
 from resources.Auth import LoginResource, LogoutResource
 
 # Estas son las rutas o URL de la api, con las que interactuará nuestro Front-end --- para thunder client
@@ -54,6 +56,7 @@ api.add_resource(SoportesCountResource, '/api/soportes_count')
 api.add_resource(SoporteEditarFormResource, '/api/soportes_form/<int:soporte_id>')
 api.add_resource(SoporteFormFiltrarResource, '/api/filtrar_form')
 api.add_resource(SoportesReportResource, '/api/soportes/report')
+api.add_resource(AlertasReportResource, '/api/alertas/report')
 
 api.add_resource(RolResource, '/api/roles')
 api.add_resource(DepartamentoResource, '/api/departamentos')
